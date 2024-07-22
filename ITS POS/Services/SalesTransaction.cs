@@ -148,19 +148,6 @@ namespace ITS_POS.Services
                     {
                         //DataContext.Sales.Add(CurrentSale);
 
-                        var saleInDb = __context.Sales.SingleOrDefault(s => s.SaleId == CurrentSale.SaleId);
-
-                        //foreach (var product in CurrentSale.SaleProducts)
-                        //{
-                        //    var existingProduct = __context.Inventory.SingleOrDefault(p => p.ProductId == product.Product.ProductId);
-
-                        //    if (existingProduct != null)
-                        //    {
-                        //        __context.Entry(existingProduct).State = EntityState.Detached;
-                        //    }
-                        //    __context.Entry(product).State = EntityState.Unchanged;
-                        //}
-
                         __context.Sales.Add(CurrentSale);
                         __context.SaveChanges();
 
@@ -174,12 +161,6 @@ namespace ITS_POS.Services
                 else
                 {
                     Console.WriteLine("You are an Admin. You don't have access to make a sales transaction.");
-                }
-                var products = __context.Inventory.ToList();
-
-                foreach (var product in products)
-                {
-                    Console.WriteLine(product);
                 }
             }
             else

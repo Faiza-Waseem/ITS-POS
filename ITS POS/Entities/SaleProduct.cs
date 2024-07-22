@@ -16,5 +16,6 @@ namespace ITS_POS.Entities
         public Product Product { get; set; }
 
         public int Quantity { get; set; } // Quantity being sold
+
     }
 }

@@ -9,15 +9,23 @@ using ITS_POS.Data;
 
 namespace ITS_POS.Services
 {
-    public static class ProductManagement
+    public class ProductManagement
     {
+        private static DataContextDb __context = null;
+
+        public static void Initialize(DataContextDb context)
+        {
+            __context = context;
+        }
+
         public static void AddProductToInventory(Product product)
         {
             if (UserAuthentication.CurrentUser != null)
             {
                 if (UserAuthentication.CurrentUser.Role == "Admin")
                 {
-                    var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == product.ProductName);
+                    //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == product.ProductName);
+                    var productInInventory = __context.Inventory.SingleOrDefault(p => p.ProductName == product.ProductName);
                     if (productInInventory != null)
                     {
                         Console.WriteLine("Product already exists in inventory.");
@@ -34,7 +42,9 @@ namespace ITS_POS.Services
                     }
                     else
                     {
-                        DataContext.Inventory.Add(product);
+                        //DataContext.Inventory.Add(product);
+                        __context.Inventory.Add(product);
+                        __context.SaveChanges();
                         Console.WriteLine("Product Added to the Inventory.");
                     }
                 }
@@ -55,11 +65,14 @@ namespace ITS_POS.Services
             {
                 if (UserAuthentication.CurrentUser.Role == "Admin")
                 {
-                    var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == product.ProductName);
+                    //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == product.ProductName);
+                    var productInInventory = __context.Inventory.SingleOrDefault(p => p.ProductName == product.ProductName);
 
                     if (productInInventory != null)
                     {
-                        DataContext.Inventory.Remove(productInInventory);
+                        //DataContext.Inventory.Remove(productInInventory);
+                        __context.Inventory.Remove(productInInventory);
+                        __context.SaveChanges();
 
                         Console.WriteLine("Product Removed from the Inventory.");
                     }
@@ -83,8 +96,9 @@ namespace ITS_POS.Services
         {
             if (UserAuthentication.CurrentUser != null)
             {
-                var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
-
+                //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+                var productInInventory = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
+                
                 if (productInInventory != null)
                 {
                     Console.WriteLine(productInInventory);
@@ -106,7 +120,9 @@ namespace ITS_POS.Services
             {
                 if (UserAuthentication.CurrentUser.Role == "Admin")
                 {
-                    var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+                    //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+                    var productInInventory = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
+                    
                     if (productInInventory != null)
                     {
                         productInInventory.ProductType = productType;

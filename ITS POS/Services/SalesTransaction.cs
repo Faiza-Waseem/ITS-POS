@@ -7,11 +7,19 @@ using System.Threading.Tasks;
 using ITS_POS.Entities;
 using ITS_POS.Data;
 using System.Security;
+using Microsoft.EntityFrameworkCore;
 
 namespace ITS_POS.Services
 {
-    public static class SalesTransaction
+    public class SalesTransaction
     {
+        private static DataContextDb __context = null;
+
+        public static void Initialize(DataContextDb context)
+        {
+            __context = context;
+        }
+
         private static Sale CurrentSale { get; set; } = new Sale();
 
         public static void AddProductToSale(String productName, int quantity)
@@ -20,16 +28,18 @@ namespace ITS_POS.Services
             {
                 if (UserAuthentication.CurrentUser.Role == "Cashier")
                 {
-                    var productInInventory = DataContext.Inventory.FirstOrDefault(p => p.ProductName == productName);
+                    //var productInInventory = DataContext.Inventory.FirstOrDefault(p => p.ProductName == productName);
+                    var productInInventory = __context.Inventory.FirstOrDefault(p => p.ProductName == productName);
+
                     if (productInInventory != null)
                     {
                         if (productInInventory.ProductQuantity < quantity)
                         {
                             Console.WriteLine($"Inventory has only {productInInventory.ProductQuantity} items. Do you want to add them to sale? Yes/No:");
-                            
+
                             string change = Console.ReadLine();
-                            
-                            if(change == "Yes")
+
+                            if (change == "Yes")
                             {
                                 quantity = productInInventory.ProductQuantity;
                             }
@@ -39,19 +49,10 @@ namespace ITS_POS.Services
                                 return;
                             }
                         }
-                        
-                        Product product = new Product()
-                        {
-                            ProductId = productInInventory.ProductId,
-                            ProductName = productInInventory.ProductName,
-                            ProductType = productInInventory.ProductType,
-                            ProductCategory = productInInventory.ProductCategory,
-                            ProductQuantity = quantity,
-                            ProductPrice = productInInventory.ProductPrice
-                        };
                         productInInventory.ProductQuantity -= quantity;
-                       
-                        CurrentSale.SaleProducts.Add(product);
+
+                        CurrentSale.SaleProducts.Add(new SaleProduct { Sale = CurrentSale, Product = productInInventory, Quantity = quantity});
+
                         Console.WriteLine("Product Added to Current Sale.");
                     }
                     else
@@ -82,7 +83,7 @@ namespace ITS_POS.Services
                     {
                         foreach (var product in CurrentSale.SaleProducts)
                         {
-                            amount += (product.ProductPrice * product.ProductQuantity);
+                            amount += (product.Product.ProductPrice * product.Quantity);
                         }
                     }
                     else
@@ -115,8 +116,8 @@ namespace ITS_POS.Services
 
                         foreach (var product in CurrentSale.SaleProducts)
                         {
-                            decimal total = product.ProductPrice * (decimal)product.ProductQuantity;
-                            Console.WriteLine($"{product.ProductId}\t\t\t{product.ProductName}\t\t\t{product.ProductQuantity}\t\t\t{product.ProductPrice}\t\t{total}");
+                            decimal total = product.Product.ProductPrice * (decimal)product.Quantity;
+                            Console.WriteLine($"{product.Product.ProductId}\t\t\t{product.Product.ProductName}\t\t\t{product.Quantity}\t\t\t{product.Product.ProductPrice}\t\t{total}");
                         }
 
                         Console.WriteLine($"\n\nTotal Amount to be paid: {CalculateAmountForSale()}");
@@ -141,11 +142,27 @@ namespace ITS_POS.Services
         {
             if (UserAuthentication.CurrentUser != null)
             {
-                if(UserAuthentication.CurrentUser.Role == "Cashier")
+                if (UserAuthentication.CurrentUser.Role == "Cashier")
                 {
                     if (CurrentSale.SaleProducts.Count != 0)
                     {
-                        DataContext.Sales.Add(CurrentSale);
+                        //DataContext.Sales.Add(CurrentSale);
+
+                        var saleInDb = __context.Sales.SingleOrDefault(s => s.SaleId == CurrentSale.SaleId);
+
+                        //foreach (var product in CurrentSale.SaleProducts)
+                        //{
+                        //    var existingProduct = __context.Inventory.SingleOrDefault(p => p.ProductId == product.Product.ProductId);
+
+                        //    if (existingProduct != null)
+                        //    {
+                        //        __context.Entry(existingProduct).State = EntityState.Detached;
+                        //    }
+                        //    __context.Entry(product).State = EntityState.Unchanged;
+                        //}
+
+                        __context.Sales.Add(CurrentSale);
+                        __context.SaveChanges();
 
                         CurrentSale.SaleProducts.Clear();
                     }
@@ -157,6 +174,12 @@ namespace ITS_POS.Services
                 else
                 {
                     Console.WriteLine("You are an Admin. You don't have access to make a sales transaction.");
+                }
+                var products = __context.Inventory.ToList();
+
+                foreach (var product in products)
+                {
+                    Console.WriteLine(product);
                 }
             }
             else

@@ -3,11 +3,19 @@ using ITS_POS.Data;
 using ITS_POS.Entities;
 using ITS_POS.Services;
 
-User userAdmin = new User() { UserId = 1, UserName = "Faiza", Password = "abc123", Email = "faiza@gmail.com", Role = "Admin"};
-User userCashier = new User() { UserId = 2, UserName = "Waseem", Password = "def456", Email = "waseem@gmail.com", Role = "Cashier" };
+using var context = new DataContextDb();
+
+UserAuthentication.Initialize(context);
+ProductManagement.Initialize(context);
+InventoryManagement.Initialize(context);
+SalesTransaction.Initialize(context);
+
+User userAdmin = new User() { UserName = "Faiza", Password = "abc123", Email = "faiza@gmail.com", Role = "Admin"};
+User userCashier = new User() { UserName = "Waseem", Password = "def456", Email = "waseem@gmail.com", Role = "Cashier" };
 
 UserAuthentication.RegisterUser(userAdmin);
 UserAuthentication.RegisterUser(userCashier);
+//DataContext.DisplayUsers();
 
 //Console.WriteLine(userAdmin);
 //Console.WriteLine(userCashier);

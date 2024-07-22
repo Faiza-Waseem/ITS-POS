@@ -9,30 +9,48 @@ using ITS_POS.Data;
 
 namespace ITS_POS.Services
 {
-    public static class UserAuthentication
+    public class UserAuthentication
     {
         public static User CurrentUser { get; set; } = null;
+        private static DataContextDb __context = null;
 
-        public static void RegisterUser(User user)
+        public static void Initialize(DataContextDb context)
         {
-            DataContext.Users.Add(user);
+            __context = context;
+        }
+       
+        public static void RegisterUser(User newUser)
+        {
+            //var user = DataContext.Users.SingleOrDefault(u => u.UserName == newUser.UserName);
+            var user = __context.Users.SingleOrDefault(u => u.UserName == newUser.UserName);
 
-            Console.WriteLine("User is registered successfully.");
+            if (user == null)
+            {
+                //DataContext.Users.Add(newUser);
+                __context.Users.Add(newUser);
+                __context.SaveChanges();
+
+                Console.WriteLine("User is registered successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Username already exists.");
+            }
         }
 
         public static void RegisterUser(string userName, string password, string email)
         {
-            DataContext.Users.Add(new User { UserName = userName, Password = password, Email = email });
-
-            Console.WriteLine("User is registered successfully.");
+            User user = new User { UserName = userName, Password = password, Email = email };
+            RegisterUser(user);
         }
 
         public static void Login(string userName, string password)
         {
             if (CurrentUser == null)
             {
-                var user = DataContext.Users.SingleOrDefault(u => u.UserName == userName && u.Password == password);
-
+                //var user = DataContext.Users.SingleOrDefault(u => u.UserName == userName && u.Password == password);
+                var user = __context.Users.SingleOrDefault(u => u.UserName == userName && u.Password == password);
+                
                 if (user == null)
                 {
                     Console.WriteLine("Login failed... Try Again!");
@@ -71,7 +89,8 @@ namespace ITS_POS.Services
             {
                 if (CurrentUser.Role == "Admin")
                 {
-                    var userFromDB = DataContext.Users.FirstOrDefault(u => u.UserName == user.UserName);
+                    //var userFromDB = DataContext.Users.FirstOrDefault(u => u.UserName == user.UserName);
+                    var userFromDB = __context.Users.SingleOrDefault(u => u.UserName == user.UserName);
 
                     if (userFromDB != null)
                     {

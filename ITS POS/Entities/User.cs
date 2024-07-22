@@ -9,7 +9,13 @@ namespace ITS_POS.Entities
 {
     public class User
     {
-        public int UserId { get; set; }
+        private readonly int userId;
+
+        public User() { }
+
+        public int UserId { get { return this.userId; } }
+
+        //public int UserId { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }

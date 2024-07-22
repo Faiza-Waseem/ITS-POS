@@ -9,13 +9,21 @@ using ITS_POS.Data;
 
 namespace ITS_POS.Services
 {
-    public static class InventoryManagement
+    public class InventoryManagement
     {
+        private static DataContextDb __context = null;
+
+        public static void Initialize(DataContextDb context)
+        {
+            __context = context;
+        }
+
         public static void TrackProductQuantity(string productName)
         {
             if (UserAuthentication.CurrentUser != null)
             {
-                var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+                //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+                var productInInventory = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
 
                 if (productInInventory != null)
                 {
@@ -36,6 +44,7 @@ namespace ITS_POS.Services
         {
             if (UserAuthentication.CurrentUser != null)
             {
+                //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
                 var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
 
                 if (productInInventory != null)
@@ -59,7 +68,8 @@ namespace ITS_POS.Services
             {
                 if (UserAuthentication.CurrentUser.Role == "Admin")
                 {
-                    var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+                    //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+                    var productInInventory = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
 
                     if (productInInventory != null)
                     {
@@ -89,7 +99,8 @@ namespace ITS_POS.Services
             {
                 if (UserAuthentication.CurrentUser.Role == "Admin")
                 {
-                    var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+                    //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+                    var productInInventory = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
 
                     if (productInInventory != null)
                     {

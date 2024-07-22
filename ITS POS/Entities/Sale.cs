@@ -9,6 +9,6 @@ namespace ITS_POS.Entities
     public class Sale
     {
         public int SaleId { get; set; }
-        public List<Product> SaleProducts { get; set; } = new List<Product>();
+        public List<SaleProduct> SaleProducts { get; set; } = new List<SaleProduct>();
     }
 }

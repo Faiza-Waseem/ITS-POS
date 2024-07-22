@@ -1,0 +1,6 @@
+@ITS_POS_WEB_API_HostAddress = http://localhost:5069
+
+GET {{ITS_POS_WEB_API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

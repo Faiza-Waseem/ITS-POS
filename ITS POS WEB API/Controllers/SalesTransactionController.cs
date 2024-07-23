@@ -73,7 +73,7 @@ namespace ITS_POS_WEB_API.Controllers
             {
                 string receipt = SalesTransaction.GenerateReceipt();
 
-                if (receipt != null)
+                if (receipt != "")
                 {
                     return Ok(receipt);
                 }

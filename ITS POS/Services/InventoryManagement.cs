@@ -11,117 +11,173 @@ namespace ITS_POS.Services
 {
     public class InventoryManagement
     {
+        #region Data Members
+
         private static DataContextDb __context = null;
+
+        #endregion
+
+        #region Functions
+
+        #region Get Context
+
+        public static DataContextDb GetContext()
+        {
+            return __context;
+        }
+
+        #endregion
+
+        #region Initialize
 
         public static void Initialize(DataContextDb context)
         {
             __context = context;
         }
 
+        #endregion
+
+        #region Product Tracking
+
+        #region Product Quantity
+        public static void TrackProductQuantity(string productName, out int quantity)
+        {
+            if (UserAuthentication.CurrentUser == null)
+            {
+                Console.WriteLine("You are not currently logged in.");
+                quantity = -1;
+                return;
+            }
+            //var product = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+            var product = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
+
+            if (product == null)
+            {
+                Console.WriteLine("Product Not Found.");
+                quantity = -1;
+                return;
+            }
+
+            Console.WriteLine($"Product Quantity is: {product.ProductQuantity}.");
+            quantity = product.ProductQuantity;
+        }
+
         public static void TrackProductQuantity(string productName)
         {
-            if (UserAuthentication.CurrentUser != null)
-            {
-                //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
-                var productInInventory = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
-
-                if (productInInventory != null)
-                {
-                    Console.WriteLine($"Product Quantity is: {productInInventory.ProductQuantity}.");
-                }
-                else
-                {
-                    Console.WriteLine("Product Not Found.");
-                }
-            }
-            else
-            {
-                Console.WriteLine("You are not currently logged in.");
-            }
+            int quantity = -1;
+            TrackProductQuantity(productName, out quantity);
         }
 
-        public static void CheckProductPrice(string productName)
+        public static void IncreaseProductQuantity(string productName, int newQuantity, out bool api)
         {
-            if (UserAuthentication.CurrentUser != null)
-            {
-                //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
-                var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
-
-                if (productInInventory != null)
-                {
-                    Console.WriteLine($"Product Price is: {productInInventory.ProductPrice}.");
-                }
-                else
-                {
-                    Console.WriteLine("Product Not Found.");
-                }
-            }
-            else
+            if (UserAuthentication.CurrentUser == null)
             {
                 Console.WriteLine("You are not currently logged in.");
+                api = false;
+                return;
             }
-        }
 
-        public static void SetProductPrice(string productName, decimal newPrice)
-        {
-            if (UserAuthentication.CurrentUser != null)
+            if (UserAuthentication.CurrentUser.Role != "Admin")
             {
-                if (UserAuthentication.CurrentUser.Role == "Admin")
-                {
-                    //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
-                    var productInInventory = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
-
-                    if (productInInventory != null)
-                    {
-                        productInInventory.ProductPrice = newPrice;
-
-                        Console.WriteLine("Product Price is changed successfully.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Product Not Found.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("You are a Cashier. You don't have access to change product price.");
-                }
+                Console.WriteLine("You are a Cashier. You don't have access to increase product quantity.");
+                api = false;
+                return;
             }
-            else
+
+            //var product = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+            var product = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
+
+            if (product == null)
             {
-                Console.WriteLine("You are not currently logged in.");
+                Console.WriteLine("Product Not Found.");
+                api = false;
+                return;
             }
+
+            product.ProductQuantity += newQuantity;
+            Console.WriteLine($"Product Quantity is increased successfully by {newQuantity} items.");
+            api = true;
         }
 
         public static void IncreaseProductQuantity(string productName, int newQuantity)
         {
-            if (UserAuthentication.CurrentUser != null)
-            {
-                if (UserAuthentication.CurrentUser.Role == "Admin")
-                {
-                    //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
-                    var productInInventory = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
+            var api = false;
+            IncreaseProductQuantity(productName, newQuantity, out api);
+        }
 
-                    if (productInInventory != null)
-                    {
-                        productInInventory.ProductQuantity += newQuantity;
+        #endregion
 
-                        Console.WriteLine($"Product Quantity is increased successfully by {newQuantity} items.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Product Not Found.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("You are a Cashier. You don't have access to increase product quantity.");
-                }
-            }
-            else
+        #region Product Price
+
+        public static void CheckProductPrice(string productName, out decimal price)
+        {
+            if (UserAuthentication.CurrentUser == null)
             {
                 Console.WriteLine("You are not currently logged in.");
+                price = -1;
+                return;
             }
+
+            //var product = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+            var product = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
+
+            if (product == null)
+            {
+                Console.WriteLine("Product Not Found.");
+                price = -1;
+                return;
+            }
+
+            Console.WriteLine($"Product Price is: {product.ProductPrice}.");
+            price = product.ProductPrice;
         }
+
+        public static void CheckProductPrice(string productName)
+        {
+            decimal price = -1;
+            CheckProductPrice(productName, out price);
+        }
+        
+        public static void SetProductPrice(string productName, decimal newPrice, out bool api)
+        {
+            if (UserAuthentication.CurrentUser == null)
+            {
+                Console.WriteLine("You are not currently logged in.");
+                api = false;
+                return;
+            }
+
+            if (UserAuthentication.CurrentUser.Role != "Admin")
+            {
+                Console.WriteLine("You are a Cashier. You don't have access to change product price.");
+                api = false;
+                return;
+            }
+            //var product = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+            var product = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
+
+            if (product == null)
+            {
+                Console.WriteLine("Product Not Found.");
+                api = false;
+                return;
+            }
+            
+            product.ProductPrice = newPrice;
+            Console.WriteLine("Product Price is changed successfully.");
+            api = true;
+        }
+
+        public static void SetProductPrice(string productName, decimal newPrice)
+        {
+            var api = false;
+            SetProductPrice(productName, newPrice, out api);
+        }
+
+        #endregion
+
+        #endregion
+
+        #endregion
     }
 }

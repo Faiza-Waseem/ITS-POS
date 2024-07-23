@@ -1,3 +1,8 @@
+using ITS_POS.Data;
+using ITS_POS_WEB_API.Controllers;
+using ITS_POS.Services;
+using ITS_POS.Entities;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,5 +26,14 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = new DataContextDb();
+    UserAuthentication.Initialize(context);
+    ProductManagement.Initialize(context);
+    InventoryManagement.Initialize(context);
+    SalesTransaction.Initialize(context);
+};
 
 app.Run();

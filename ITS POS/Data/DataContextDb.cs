@@ -21,6 +21,7 @@ namespace ITS_POS.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseInMemoryDatabase("ITS-POS");
+            optionsBuilder.EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -30,21 +31,11 @@ namespace ITS_POS.Data
             modelBuilder.Entity<Sale>().HasKey(s => s.SaleId);
             modelBuilder.Entity<SaleProduct>().HasKey(sp => sp.SaleProductId);
 
-            modelBuilder.Entity<SaleProduct>()
-                .HasOne(sp => sp.Sale)
-                .WithMany(s => s.SaleProducts)
-                .HasForeignKey(sp => sp.SaleId);
+            modelBuilder.Entity<SaleProduct>().HasOne(sp => sp.Sale)
+                .WithMany(s => s.SaleProducts).HasForeignKey(sp => sp.SaleId);
 
-            modelBuilder.Entity<SaleProduct>()
-                .HasOne(sp => sp.Product)
-                .WithMany(p => p.Sales)
-                .HasForeignKey(sp => sp.ProductId);
-
-            //modelBuilder.Entity<Sale>().HasMany(s => s.SaleProducts).WithMany(p => p.Sales)
-            //    .UsingEntity<Dictionary<string, object>>(
-            //        "SaleProduct",
-            //        j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId"),
-            //        j => j.HasOne<Sale>().WithMany().HasForeignKey("SaleId"));
+            modelBuilder.Entity<SaleProduct>().HasOne(sp => sp.Product)
+                .WithMany(p => p.Sales).HasForeignKey(sp => sp.ProductId);
         }
     }
 }

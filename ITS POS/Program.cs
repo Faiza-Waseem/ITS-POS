@@ -10,8 +10,8 @@ ProductManagement.Initialize(context);
 InventoryManagement.Initialize(context);
 SalesTransaction.Initialize(context);
 
-User userAdmin = new User() { UserName = "Faiza", Password = "abc123", Email = "faiza@gmail.com", Role = "Admin"};
-User userCashier = new User() { UserName = "Waseem", Password = "def456", Email = "waseem@gmail.com", Role = "Cashier" };
+User userAdmin = new User() { Username = "Faiza", Password = "abc123", Email = "faiza@gmail.com", Role = "Admin"};
+User userCashier = new User() { Username = "Waseem", Password = "def456", Email = "waseem@gmail.com", Role = "Cashier" };
 
 UserAuthentication.RegisterUser(userAdmin);
 UserAuthentication.RegisterUser(userCashier);
@@ -23,16 +23,16 @@ UserAuthentication.RegisterUser(userCashier);
 UserAuthentication.Login("Faiza", "abc123");
 //UserAuthentication.Login("Waseem", "def456");
 
-//UserAuthentication.SetUserRole(userCashier, "Admin");
+//UserAuthentication.SetUserRole("Waseem", "Admin");
 //Console.WriteLine(userCashier);
 
-Product product1 = new Product() { ProductId = 1, ProductName = "Xiaomi", ProductType = "Mobile Phone", ProductCategory = "Electronics", ProductQuantity = 10, ProductPrice = 100000 };
+Product product1 = new Product() { ProductName = "Xiaomi", ProductType = "Mobile Phone", ProductCategory = "Electronics", ProductQuantity = 10, ProductPrice = 100000 };
 //Console.WriteLine(product1);
 
-Product product2 = new Product() { ProductId = 2, ProductName = "IPhone", ProductType = "Mobile Phone", ProductCategory = "Electronics", ProductQuantity = 10, ProductPrice = 200000 };
-Product product3 = new Product() { ProductId = 3, ProductName = "Samsung", ProductType = "Tablet", ProductCategory = "Electronics", ProductQuantity = 20, ProductPrice = 300000 };
-Product product4 = new Product() { ProductId = 4, ProductName = "Lenovo", ProductType = "Laptop", ProductCategory = "Electronics", ProductQuantity = 30, ProductPrice = 400000 };
-Product product5 = new Product() { ProductId = 5, ProductName = "HP", ProductType = "Laptop", ProductCategory = "Electronics", ProductQuantity = 40, ProductPrice = 500000 };
+Product product2 = new Product() { ProductName = "IPhone", ProductType = "Mobile Phone", ProductCategory = "Electronics", ProductQuantity = 10, ProductPrice = 200000 };
+Product product3 = new Product() { ProductName = "Samsung", ProductType = "Tablet", ProductCategory = "Electronics", ProductQuantity = 20, ProductPrice = 300000 };
+Product product4 = new Product() { ProductName = "Lenovo", ProductType = "Laptop", ProductCategory = "Electronics", ProductQuantity = 30, ProductPrice = 400000 };
+Product product5 = new Product() { ProductName = "HP", ProductType = "Laptop", ProductCategory = "Electronics", ProductQuantity = 40, ProductPrice = 500000 };
 
 ProductManagement.AddProductToInventory(product1);
 //ProductManagement.AddProductToInventory(product1);
@@ -44,11 +44,11 @@ ProductManagement.AddProductToInventory(product5);
 
 //DataContext.DisplayInventory();
 
-//ProductManagement.RemoveProductFromInventory(product1);
-//ProductManagement.UpdateProductInInventory("Xiaomi", "abc", "def", 12, 1211213);
+//ProductManagement.RemoveProductFromInventory("Xiaomi");
+ProductManagement.UpdateProductInInventory("Xiaomi", "", "", 13, 0m);
 //ProductManagement.UpdateProductInInventory("Samsung", "abc", "def", 12, 1211213);
 
-//ProductManagement.ViewProductFromInventory("Lenovo");
+ProductManagement.ViewProductFromInventory("Xiaomi");
 
 //DataContext.DisplayInventory();
 
@@ -70,9 +70,16 @@ SalesTransaction.AddProductToSale("Samsung", 1);
 
 Console.WriteLine(SalesTransaction.CalculateAmountForSale());
 
-SalesTransaction.GenerateReceipt();
+Console.WriteLine(SalesTransaction.GenerateReceipt());
 
 SalesTransaction.TransactSale();
-SalesTransaction.GenerateReceipt();
+Console.WriteLine(SalesTransaction.GenerateReceipt());
+
+//var products = context.Inventory.ToList();
+
+//foreach (var product in products)
+//{
+//    Console.WriteLine(product);
+//}
 
 UserAuthentication.Logout();

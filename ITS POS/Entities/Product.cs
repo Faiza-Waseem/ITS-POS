@@ -9,13 +9,14 @@ namespace ITS_POS.Entities
 {
     public class Product
     {
-        public int ProductId { get; set; }
+        private readonly int productId;
+        public int ProductId { get { return this.productId; } }
         public string ProductName { get; set; }
         public string ProductType { get; set; }
         public string ProductCategory { get; set; }
         public int ProductQuantity { get; set; }
         public decimal ProductPrice { get; set; }
-        public ICollection<SaleProduct> Sales { get; set; } = new List<SaleProduct>();
+        public ICollection<SaleProduct> Sales { get; } = new List<SaleProduct>();
 
         public override string ToString()
         {

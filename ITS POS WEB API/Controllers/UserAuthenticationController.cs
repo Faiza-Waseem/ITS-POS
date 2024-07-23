@@ -7,151 +7,151 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ITS_POS.Data;
 using ITS_POS.Entities;
+using ITS_POS.Services;
 
 namespace ITS_POS_WEB_API.Controllers
 {
-    public class UserAuthenticationController : Controller
+    [ApiController]
+    [Route("[controller]")]
+    public class UserAuthenticationController : ControllerBase
     {
-        private readonly DataContextDb _context;
+        #region Constructor
 
-        public UserAuthenticationController(DataContextDb context)
+        public UserAuthenticationController() { }
+
+        #endregion
+
+        #region Functions
+
+        #region User Registration
+
+        [HttpPost("RegisterUserByObject")]
+        public IActionResult RegisterUser([FromBody]User newUser)
         {
-            _context = context;
-        }
-
-        // GET: UserAuthentication
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Users.ToListAsync());
-        }
-
-        // GET: UserAuthentication/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                bool api = true;
+                UserAuthentication.RegisterUser(newUser, out api);
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.UserId == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
-        }
-
-        // GET: UserAuthentication/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: UserAuthentication/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,UserName,Password,Email,Role")] User user)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(user);
-        }
-
-        // GET: UserAuthentication/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return View(user);
-        }
-
-        // POST: UserAuthentication/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserName,Password,Email,Role")] User user)
-        {
-            if (id != user.UserId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                if(api)
                 {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
+                    return Ok("User is registered successfully.");
                 }
-                catch (DbUpdateConcurrencyException)
+                
+                return Ok("Error occurred... See Console");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("RegisterUserByQuery")]
+        public IActionResult RegisterUser([FromQuery] string username, [FromQuery] string password, [FromQuery] string email, [FromQuery] string role)
+        {
+            try
+            {
+                User newUser = new User() { Username = username, Password = password, Email = email, Role = role };
+                return RegisterUser(newUser);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region User Authentication
+
+        [HttpPost("Login")]
+        public IActionResult Login([FromQuery] string username, [FromQuery] string password)
+        {
+            try
+            {
+                bool api = true;
+                UserAuthentication.Login(username, password, out api);
+                if (api)
                 {
-                    if (!UserExists(user.UserId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return Ok("User successfully logged in.");
                 }
-                return RedirectToAction(nameof(Index));
+                
+                return Ok("Error occurred... See Console");
             }
-            return View(user);
-        }
-
-        // GET: UserAuthentication/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.UserId == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
         }
 
-        // POST: UserAuthentication/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpGet("Logout")]
+        public IActionResult Logout()
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
+            try
             {
-                _context.Users.Remove(user);
+                if (UserAuthentication.CurrentUser != null)
+                {
+                    UserAuthentication.Logout();
+                    return Ok("User logged out successfully.");
+                }
+                else
+                {
+                    return Ok("You are not currently logged in.");
+                }
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        private bool UserExists(int id)
+        #endregion
+
+        #region Set User Role
+
+        [HttpPost("SetUserRole")]
+        public IActionResult SetUserRole([FromQuery] string username, [FromQuery] string role)
         {
-            return _context.Users.Any(e => e.UserId == id);
+            try
+            {
+                bool api = true;
+
+                UserAuthentication.SetUserRole(username, role, out api);
+                if (api)
+                {
+                    return Ok("Role is changed successfully.");
+                }
+
+                return Ok("Error occurred... See Console");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
+        #endregion
+
+        #region Get Users
+
+        [HttpGet("GetAllUsers")]
+        public IActionResult GetAllUsers()
+        {
+            try
+            {
+                var context = UserAuthentication.GetContext();
+                var users = context.Users.ToList<User>();
+
+                return Ok(users);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message); 
+            }
+        }
+
+        #endregion
+
+        #endregion
     }
 }

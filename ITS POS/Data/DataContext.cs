@@ -12,6 +12,7 @@ namespace ITS_POS.Data
         public static List<User> Users = new List<User>();
         public static List<Product> Inventory = new List<Product>();
         public static List<Sale> Sales = new List<Sale>();
+        public static List<SaleProduct> SaleProducts = new List<SaleProduct>();
 
         public static void DisplayUsers()
         {

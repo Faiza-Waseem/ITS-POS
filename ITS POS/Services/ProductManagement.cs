@@ -55,12 +55,12 @@ namespace ITS_POS.Services
                 return;
             }
             
-            //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == product.ProductName);
-            var productInInventory = __context.Inventory.SingleOrDefault(p => p.ProductName == newProduct.ProductName);
+            //var product = DataContext.Inventory.SingleOrDefault(p => p.ProductName == newProduct.ProductName);
+            var product = __context.Inventory.SingleOrDefault(p => p.ProductName == newProduct.ProductName);
            
-            if (productInInventory == null)
+            if (product == null)
             {
-                //DataContext.Inventory.Add(product);
+                //DataContext.Inventory.Add(newProduct);
                 __context.Inventory.Add(newProduct);
                 __context.SaveChanges();
 
@@ -80,7 +80,7 @@ namespace ITS_POS.Services
                 return;
             }
 
-            productInInventory.ProductQuantity += newProduct.ProductQuantity;
+            product.ProductQuantity += newProduct.ProductQuantity;
 
             Console.WriteLine("Product Added to the Inventory.");
             api = true;
@@ -117,7 +117,7 @@ namespace ITS_POS.Services
                 return;
             }
 
-            //var productInInventory = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
+            //var product = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
             var product = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
 
             if (product == null)

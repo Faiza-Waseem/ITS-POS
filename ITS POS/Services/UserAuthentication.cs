@@ -143,7 +143,7 @@ namespace ITS_POS.Services
                 return;
             }
 
-            //var userFromDB = DataContext.Users.SingleOrDefault(u => u.Username == user);
+            //var user = DataContext.Users.SingleOrDefault(u => u.Username == username);
             var user = __context.Users.SingleOrDefault(u => u.Username == username);
 
             if(user == null)

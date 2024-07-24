@@ -59,7 +59,7 @@ namespace ITS_POS.Services
                 return;
             }
 
-            //var product = DataContext.Inventory.FirstOrDefault(p => p.ProductName == productName);
+            //var product = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
             var product = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
 
             if (product == null)
@@ -88,6 +88,7 @@ namespace ITS_POS.Services
             }
 
             product.ProductQuantity -= quantity;
+            //var sp = CurrentSale.SaleProducts.SingleOrDefault(sp => sp.Product.ProductName == product.ProductName);
             var sp = CurrentSale.SaleProducts.SingleOrDefault(sp => sp.Product.ProductId == product.ProductId);
             
             if (sp == null)

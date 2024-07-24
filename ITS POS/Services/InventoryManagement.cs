@@ -48,6 +48,7 @@ namespace ITS_POS.Services
                 quantity = -1;
                 return;
             }
+
             //var product = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
             var product = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
 
@@ -153,6 +154,7 @@ namespace ITS_POS.Services
                 api = false;
                 return;
             }
+            
             //var product = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
             var product = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
 

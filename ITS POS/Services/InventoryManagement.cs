@@ -9,33 +9,33 @@ using ITS_POS.Data;
 
 namespace ITS_POS.Services
 {
-    public class InventoryManagement
+    public class InventoryManagement : ServiceBase
     {
-        #region Data Members
+        //#region Data Members
 
-        private static DataContextDb __context = null;
+        //private static DataContextDb __context = null;
 
-        #endregion
+        //#endregion
 
         #region Functions
 
-        #region Get Context
+        //#region Get Context
 
-        public static DataContextDb GetContext()
-        {
-            return __context;
-        }
+        //public static DataContextDb GetContext()
+        //{
+        //    return __context;
+        //}
 
-        #endregion
+        //#endregion
 
-        #region Initialize
+        //#region Initialize
 
-        public static void Initialize(DataContextDb context)
-        {
-            __context = context;
-        }
+        //public static void Initialize(DataContextDb context)
+        //{
+        //    __context = context;
+        //}
 
-        #endregion
+        //#endregion
 
         #region Product Tracking
 

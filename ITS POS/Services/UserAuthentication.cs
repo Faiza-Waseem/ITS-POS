@@ -9,34 +9,34 @@ using ITS_POS.Data;
 
 namespace ITS_POS.Services
 {
-    public class UserAuthentication
+    public class UserAuthentication : ServiceBase
     {
         #region DataMembers
 
         public static User CurrentUser { get; set; } = null;
-        private static DataContextDb __context = null;
+        //private static DataContextDb __context = null;
 
         #endregion
 
         #region Functions
 
-        #region Get Context
+        //#region Get Context
 
-        public static DataContextDb GetContext()
-        {
-            return __context;
-        }
+        //public static DataContextDb GetContext()
+        //{
+        //    return __context;
+        //}
 
-        #endregion
+        //#endregion
 
-        #region Initialize
+        //#region Initialize
 
-        public static void Initialize(DataContextDb context)
-        {
-            __context = context;
-        }
+        //public static void Initialize(DataContextDb context)
+        //{
+        //    __context = context;
+        //}
 
-        #endregion
+        //#endregion
 
         #region User Registration
         public static void RegisterUser(User newUser, out bool api)

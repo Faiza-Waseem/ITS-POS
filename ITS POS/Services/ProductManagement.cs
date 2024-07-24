@@ -9,37 +9,19 @@ using ITS_POS.Data;
 
 namespace ITS_POS.Services
 {
-    public class ProductManagement : ServiceBase
+    public class ProductManagement : ServiceBase, IProductManagement
     {
-        //#region Data Members
+        #region Constructor
 
-        //private static DataContextDb __context = null;
+        public ProductManagement(DataContextDb context) : base(context) { }
 
-        //#endregion
+        #endregion
 
         #region Functions
 
-        //#region Get Context
-
-        //public static DataContextDb GetContext()
-        //{
-        //    return __context;
-        //}
-
-        //#endregion
-
-        //#region Initialize
-
-        //public static void Initialize(DataContextDb context)
-        //{
-        //    __context = context;
-        //}
-
-        //#endregion
-
         #region Product Addition To Inventory
 
-        public static void AddProductToInventory(Product newProduct, out bool api)
+        public void AddProductToInventory(Product newProduct, out bool api)
         {
             if (UserAuthentication.CurrentUser == null)
             {
@@ -86,13 +68,13 @@ namespace ITS_POS.Services
             api = true;
         }
 
-        public static void AddProductToInventory(Product newProduct)
+        public void AddProductToInventory(Product newProduct)
         {
             var api = false;
             AddProductToInventory(newProduct, out api);
         }
 
-        public static void AddProductToInventory(string name, string type, string category, int quantity, decimal price)
+        public void AddProductToInventory(string name, string type, string category, int quantity, decimal price)
         {
             Product newProduct = new Product() { ProductName = name, ProductType = type, ProductCategory = category, ProductQuantity = quantity, ProductPrice = price };
             AddProductToInventory(newProduct);
@@ -101,7 +83,7 @@ namespace ITS_POS.Services
         #endregion
 
         #region Product Removal From Inventory
-        public static void RemoveProductFromInventory(string productName, out bool api)
+        public void RemoveProductFromInventory(string productName, out bool api)
         {
             if (UserAuthentication.CurrentUser == null)
             {
@@ -135,7 +117,7 @@ namespace ITS_POS.Services
             api = true;
         }
 
-        public static void RemoveProductFromInventory(string productName)
+        public void RemoveProductFromInventory(string productName)
         {
             var api = false;
             RemoveProductFromInventory(productName, out api);
@@ -145,7 +127,7 @@ namespace ITS_POS.Services
 
         #region View Product From Inventory
 
-        public static void ViewProductFromInventory(string productName, out Product inventoryProduct)
+        public void ViewProductFromInventory(string productName, out Product inventoryProduct)
         {
             if (UserAuthentication.CurrentUser == null)
             {
@@ -166,7 +148,7 @@ namespace ITS_POS.Services
             inventoryProduct = product;
         }
 
-        public static void ViewProductFromInventory(string productName)
+        public void ViewProductFromInventory(string productName)
         {
             Product product = null;
             ViewProductFromInventory (productName, out product);
@@ -176,7 +158,7 @@ namespace ITS_POS.Services
 
         #region Update Product In Inventory
 
-        public static void UpdateProductInInventory(string productName, string productType, string productCategory, int productQuantity, decimal productPrice, out bool api)
+        public void UpdateProductInInventory(string productName, string productType, string productCategory, int productQuantity, decimal productPrice, out bool api)
         {
             if (UserAuthentication.CurrentUser == null)
             {
@@ -226,7 +208,7 @@ namespace ITS_POS.Services
             api = true;
         }
 
-        public static void UpdateProductInInventory(string productName, string productType, string productCategory, int productQuantity, decimal productPrice)
+        public void UpdateProductInInventory(string productName, string productType, string productCategory, int productQuantity, decimal productPrice)
         {
             var api = false;
             UpdateProductInInventory(productName, productType, productCategory, productQuantity, productPrice, out api);

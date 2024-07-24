@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ITS_POS.Data;
 using ITS_POS.Entities;
 using ITS_POS.Services;
+using Microsoft.AspNetCore.Authentication;
 
 namespace ITS_POS_WEB_API.Controllers
 {
@@ -15,9 +16,18 @@ namespace ITS_POS_WEB_API.Controllers
     [Route("[controller]")]
     public class UserAuthenticationController : ControllerBase
     {
+        #region Data Members
+
+        private readonly IUserAuthentication __userAuthentication;
+
+        #endregion
+
         #region Constructor
 
-        public UserAuthenticationController() { }
+        public UserAuthenticationController(IUserAuthentication userAuthentication)
+        {
+            __userAuthentication = userAuthentication;
+        }
 
         #endregion
 
@@ -31,7 +41,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 bool api = true;
-                UserAuthentication.RegisterUser(newUser, out api);
+                __userAuthentication.RegisterUser(newUser, out api);
 
                 if(api)
                 {
@@ -70,7 +80,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 bool api = true;
-                UserAuthentication.Login(username, password, out api);
+                __userAuthentication.Login(username, password, out api);
                 if (api)
                 {
                     return Ok("User successfully logged in.");
@@ -91,7 +101,7 @@ namespace ITS_POS_WEB_API.Controllers
             {
                 if (UserAuthentication.CurrentUser != null)
                 {
-                    UserAuthentication.Logout();
+                    __userAuthentication.Logout();
                     return Ok("User logged out successfully.");
                 }
                 else
@@ -116,7 +126,7 @@ namespace ITS_POS_WEB_API.Controllers
             {
                 bool api = true;
 
-                UserAuthentication.SetUserRole(username, role, out api);
+                __userAuthentication.SetUserRole(username, role, out api);
                 if (api)
                 {
                     return Ok("Role is changed successfully.");

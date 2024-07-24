@@ -16,7 +16,8 @@ namespace ITS_POS.Data
         public DbSet<Sale> Sales { get; set; }
         public DbSet<SaleProduct> SaleProducts { get; set; }
 
-        //public DataContextDb(DbContextOptions<DataContextDb> options): base(options) { }
+        public DataContextDb() { }
+        public DataContextDb(DbContextOptions<DataContextDb> options): base(options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

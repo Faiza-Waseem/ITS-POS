@@ -10,9 +10,18 @@ namespace ITS_POS_WEB_API.Controllers
     [Route("[controller]")]
     public class SalesTransactionController : ControllerBase
     {
+        #region Data Members
+
+        private readonly ISalesTransaction __salesTransaction;
+
+        #endregion
+
         #region Constructor
 
-        public SalesTransactionController() { }
+        public SalesTransactionController(ISalesTransaction salesTransaction)
+        {
+            __salesTransaction = salesTransaction;
+        }
 
         #endregion
 
@@ -26,7 +35,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 bool api = true;
-                SalesTransaction.AddProductToSale(productName, quantity, out api);
+                __salesTransaction.AddProductToSale(productName, quantity, out api);
 
                 if (api)
                 {
@@ -51,7 +60,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 decimal price = -1;
-                price = SalesTransaction.CalculateAmountForSale();
+                price = __salesTransaction.CalculateAmountForSale();
 
                 if (price != -1)
                 {
@@ -71,7 +80,7 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                string receipt = SalesTransaction.GenerateReceipt();
+                string receipt = __salesTransaction.GenerateReceipt();
 
                 if (receipt != "")
                 {
@@ -92,7 +101,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 bool api = true;
-                SalesTransaction.TransactSale(out api);
+                __salesTransaction.TransactSale(out api);
 
                 if(api)
                 {

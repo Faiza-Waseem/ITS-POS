@@ -10,9 +10,18 @@ namespace ITS_POS_WEB_API.Controllers
     [Route("[controller]")]
     public class InventoryManagementController : ControllerBase
     {
+        #region Data Members
+
+        private readonly IInventoryManagement __inventoryManagement;
+
+        #endregion
+
         #region Constructor
 
-        public InventoryManagementController() { }
+        public InventoryManagementController(IInventoryManagement inventoryManagement)
+        {
+            __inventoryManagement = inventoryManagement;
+        }
 
         #endregion
 
@@ -28,7 +37,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 int quantity = -1;
-                InventoryManagement.TrackProductQuantity(productName, out quantity);
+                __inventoryManagement.TrackProductQuantity(productName, out quantity);
 
                 if (quantity != -1)
                 {
@@ -49,7 +58,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 bool api = true;
-                InventoryManagement.IncreaseProductQuantity(productName, newQuantity, out api);
+                __inventoryManagement.IncreaseProductQuantity(productName, newQuantity, out api);
 
                 if (api)
                 {
@@ -74,7 +83,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 decimal price = -1;
-                InventoryManagement.CheckProductPrice(productName, out price);
+                __inventoryManagement.CheckProductPrice(productName, out price);
 
                 if (price != -1)
                 {
@@ -95,7 +104,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 bool api = true;
-                InventoryManagement.SetProductPrice(productName, newPrice, out api);
+                __inventoryManagement.SetProductPrice(productName, newPrice, out api);
 
                 if(api)
                 {

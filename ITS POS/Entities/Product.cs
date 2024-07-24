@@ -16,7 +16,7 @@ namespace ITS_POS.Entities
         public string ProductCategory { get; set; }
         public int ProductQuantity { get; set; }
         public decimal ProductPrice { get; set; }
-        public ICollection<SaleProduct> Sales { get; } = new List<SaleProduct>();
+        public ICollection<SaleProduct> Sales = new List<SaleProduct>();
 
         public override string ToString()
         {

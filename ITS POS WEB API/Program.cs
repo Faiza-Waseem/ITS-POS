@@ -30,10 +30,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = new DataContextDb();
-    UserAuthentication.Initialize(context);
-    ProductManagement.Initialize(context);
-    InventoryManagement.Initialize(context);
-    SalesTransaction.Initialize(context);
+    ServiceBase.Initialize(context);
 };
 
 app.Run();

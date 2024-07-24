@@ -10,11 +10,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITS_POS.Services
 {
-    public class SalesTransaction
+    public class SalesTransaction : ServiceBase
     {
         #region Data Members
 
-        private static DataContextDb __context = null;
+        //private static DataContextDb __context = null;
 
         //Properties
         private static Sale CurrentSale { get; set; } = new Sale();
@@ -23,23 +23,23 @@ namespace ITS_POS.Services
 
         #region Functions
 
-        #region Get Context
+        //#region Get Context
 
-        public static DataContextDb GetContext()
-        {
-            return __context;
-        }
+        //public static DataContextDb GetContext()
+        //{
+        //    return __context;
+        //}
 
-        #endregion
+        //#endregion
 
-        #region Initialize
+        //#region Initialize
 
-        public static void Initialize(DataContextDb context)
-        {
-            __context = context;
-        }
+        //public static void Initialize(DataContextDb context)
+        //{
+        //    __context = context;
+        //}
 
-        #endregion
+        //#endregion
 
         #region Product Addition to Sale
 
@@ -203,6 +203,7 @@ namespace ITS_POS.Services
             __context.SaveChanges();
 
             CurrentSale.SaleProducts.Clear();
+            CurrentSale = new Sale();
             Console.WriteLine("Current Sale Transaction done.");
             api = true;
         }

@@ -139,7 +139,7 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                var context = UserAuthentication.GetContext();
+                var context = ServiceBase.GetContext();
                 var users = context.Users.ToList<User>();
 
                 return Ok(users);

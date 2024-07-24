@@ -139,7 +139,7 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                var context = ProductManagement.GetContext();
+                var context = ServiceBase.GetContext();
                 var products = context.Inventory.ToList<Product>();
 
                 return Ok(products);

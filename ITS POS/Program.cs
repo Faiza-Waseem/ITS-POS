@@ -5,10 +5,7 @@ using ITS_POS.Services;
 
 using var context = new DataContextDb();
 
-UserAuthentication.Initialize(context);
-ProductManagement.Initialize(context);
-InventoryManagement.Initialize(context);
-SalesTransaction.Initialize(context);
+ServiceBase.Initialize(context);
 
 User userAdmin = new User() { Username = "Faiza", Password = "abc123", Email = "faiza@gmail.com", Role = "Admin"};
 User userCashier = new User() { Username = "Waseem", Password = "def456", Email = "waseem@gmail.com", Role = "Cashier" };
@@ -73,6 +70,10 @@ Console.WriteLine(SalesTransaction.CalculateAmountForSale());
 Console.WriteLine(SalesTransaction.GenerateReceipt());
 
 SalesTransaction.TransactSale();
+SalesTransaction.AddProductToSale("Xiaomi", 3);
+SalesTransaction.AddProductToSale("Samsung", 1);
+
+
 Console.WriteLine(SalesTransaction.GenerateReceipt());
 
 //var products = context.Inventory.ToList();

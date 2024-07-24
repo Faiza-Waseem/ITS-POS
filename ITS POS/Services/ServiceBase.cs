@@ -15,6 +15,15 @@ namespace ITS_POS.Services
 
         #endregion
 
+        #region Constructor
+
+        public ServiceBase(DataContextDb context)
+        {
+            __context = context;
+        }
+
+        #endregion
+
         #region Functions
 
         #region Get Context
@@ -22,15 +31,6 @@ namespace ITS_POS.Services
         public static DataContextDb GetContext()
         {
             return __context;
-        }
-
-        #endregion
-
-        #region Initialize
-
-        public static void Initialize(DataContextDb context)
-        {
-            __context = context;
         }
 
         #endregion

@@ -3,24 +3,27 @@ using ITS_POS.Data;
 using ITS_POS.Entities;
 using ITS_POS.Services;
 
-using var context = new DataContextDb();
+using DataContextDb context = new DataContextDb();
 
-ServiceBase.Initialize(context);
+UserAuthentication u = new UserAuthentication(context);
+ProductManagement p = new ProductManagement(context);
+InventoryManagement i = new InventoryManagement(context);
+SalesTransaction s = new SalesTransaction(context);
 
 User userAdmin = new User() { Username = "Faiza", Password = "abc123", Email = "faiza@gmail.com", Role = "Admin"};
 User userCashier = new User() { Username = "Waseem", Password = "def456", Email = "waseem@gmail.com", Role = "Cashier" };
 
-UserAuthentication.RegisterUser(userAdmin);
-UserAuthentication.RegisterUser(userCashier);
+u.RegisterUser(userAdmin);
+u.RegisterUser(userCashier);
 //DataContext.DisplayUsers();
 
 //Console.WriteLine(userAdmin);
 //Console.WriteLine(userCashier);
 
-UserAuthentication.Login("Faiza", "abc123");
-//UserAuthentication.Login("Waseem", "def456");
+u.Login("Faiza", "abc123");
+//u.Login("Waseem", "def456");
 
-//UserAuthentication.SetUserRole("Waseem", "Admin");
+//u.SetUserRole("Waseem", "Admin");
 //Console.WriteLine(userCashier);
 
 Product product1 = new Product() { ProductName = "Xiaomi", ProductType = "Mobile Phone", ProductCategory = "Electronics", ProductQuantity = 10, ProductPrice = 100000 };
@@ -31,50 +34,50 @@ Product product3 = new Product() { ProductName = "Samsung", ProductType = "Table
 Product product4 = new Product() { ProductName = "Lenovo", ProductType = "Laptop", ProductCategory = "Electronics", ProductQuantity = 30, ProductPrice = 400000 };
 Product product5 = new Product() { ProductName = "HP", ProductType = "Laptop", ProductCategory = "Electronics", ProductQuantity = 40, ProductPrice = 500000 };
 
-ProductManagement.AddProductToInventory(product1);
+p.AddProductToInventory(product1);
 //ProductManagement.AddProductToInventory(product1);
 
-ProductManagement.AddProductToInventory(product2);
-ProductManagement.AddProductToInventory(product3);
-ProductManagement.AddProductToInventory(product4);
-ProductManagement.AddProductToInventory(product5);
+p.AddProductToInventory(product2);
+p.AddProductToInventory(product3);
+p.AddProductToInventory(product4);
+p.AddProductToInventory(product5);
 
 //DataContext.DisplayInventory();
 
-//ProductManagement.RemoveProductFromInventory("Xiaomi");
-ProductManagement.UpdateProductInInventory("Xiaomi", "", "", 13, 0m);
-//ProductManagement.UpdateProductInInventory("Samsung", "abc", "def", 12, 1211213);
+//p.RemoveProductFromInventory("Xiaomi");
+p.UpdateProductInInventory("Xiaomi", "", "", 13, 0m);
+//p.UpdateProductInInventory("Samsung", "abc", "def", 12, 1211213);
 
-ProductManagement.ViewProductFromInventory("Xiaomi");
+p.ViewProductFromInventory("Xiaomi");
 
 //DataContext.DisplayInventory();
 
-InventoryManagement.TrackProductQuantity("Lenovo");
-InventoryManagement.IncreaseProductQuantity("Lenovo", 25);
-InventoryManagement.TrackProductQuantity("Lenovo");
+i.TrackProductQuantity("Lenovo");
+i.IncreaseProductQuantity("Lenovo", 25);
+i.TrackProductQuantity("Lenovo");
 
-InventoryManagement.CheckProductPrice("Lenovo");
-InventoryManagement.SetProductPrice("Lenovo", 450000);
-InventoryManagement.CheckProductPrice("Lenovo");
+i.CheckProductPrice("Lenovo");
+i.SetProductPrice("Lenovo", 450000);
+i.CheckProductPrice("Lenovo");
 
-UserAuthentication.Logout();
-UserAuthentication.Login("Waseem", "def456");
+u.Logout();
+u.Login("Waseem", "def456");
 
-SalesTransaction.AddProductToSale("Lenovo", 2);
-//InventoryManagement.TrackProductQuantity("Lenovo");
-SalesTransaction.AddProductToSale("Xiaomi", 3);
-SalesTransaction.AddProductToSale("Samsung", 1);
+s.AddProductToSale("Lenovo", 2);
+//i.TrackProductQuantity("Lenovo");
+s.AddProductToSale("Xiaomi", 3);
+s.AddProductToSale("Samsung", 1);
 
-Console.WriteLine(SalesTransaction.CalculateAmountForSale());
+Console.WriteLine(s.CalculateAmountForSale());
 
-Console.WriteLine(SalesTransaction.GenerateReceipt());
+Console.WriteLine(s.GenerateReceipt());
 
-SalesTransaction.TransactSale();
-SalesTransaction.AddProductToSale("Xiaomi", 3);
-SalesTransaction.AddProductToSale("Samsung", 1);
+s.TransactSale();
+s.AddProductToSale("Xiaomi", 3);
+s.AddProductToSale("Samsung", 1);
 
 
-Console.WriteLine(SalesTransaction.GenerateReceipt());
+Console.WriteLine(s.GenerateReceipt());
 
 //var products = context.Inventory.ToList();
 
@@ -83,4 +86,4 @@ Console.WriteLine(SalesTransaction.GenerateReceipt());
 //    Console.WriteLine(product);
 //}
 
-UserAuthentication.Logout();
+u.Logout();

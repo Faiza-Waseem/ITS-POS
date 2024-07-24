@@ -10,40 +10,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITS_POS.Services
 {
-    public class SalesTransaction : ServiceBase
+    public class SalesTransaction : ServiceBase, ISalesTransaction
     {
         #region Data Members
-
-        //private static DataContextDb __context = null;
 
         //Properties
         private static Sale CurrentSale { get; set; } = new Sale();
 
         #endregion
 
+        #region Constructor
+
+        public SalesTransaction(DataContextDb context) : base(context) { }
+
+        #endregion
+
         #region Functions
-
-        //#region Get Context
-
-        //public static DataContextDb GetContext()
-        //{
-        //    return __context;
-        //}
-
-        //#endregion
-
-        //#region Initialize
-
-        //public static void Initialize(DataContextDb context)
-        //{
-        //    __context = context;
-        //}
-
-        //#endregion
 
         #region Product Addition to Sale
 
-        public static void AddProductToSale(string productName, int quantity, out bool api)
+        public void AddProductToSale(string productName, int quantity, out bool api)
         {
             if (UserAuthentication.CurrentUser == null)
             {
@@ -103,7 +89,7 @@ namespace ITS_POS.Services
             api = true;
         }
 
-        public static void AddProductToSale(String productName, int quantity)
+        public void AddProductToSale(String productName, int quantity)
         {
             bool api = false;
             AddProductToSale(productName, quantity, out api);
@@ -113,7 +99,7 @@ namespace ITS_POS.Services
 
         #region Sale Transaction
 
-        public static decimal CalculateAmountForSale()
+        public decimal CalculateAmountForSale()
         {
             decimal amount = -1;
 
@@ -142,7 +128,7 @@ namespace ITS_POS.Services
             return amount;
         }
 
-        public static string GenerateReceipt()
+        public string GenerateReceipt()
         {
             string receipt = "";
 
@@ -174,7 +160,7 @@ namespace ITS_POS.Services
             return receipt;
         }
 
-        public static void TransactSale(out bool api)
+        public void TransactSale(out bool api)
         {
             if (UserAuthentication.CurrentUser == null)
             {
@@ -208,7 +194,7 @@ namespace ITS_POS.Services
             api = true;
         }
 
-        public static void TransactSale()
+        public void TransactSale()
         {
             var api = false;
             TransactSale(out api);

@@ -10,9 +10,18 @@ namespace ITS_POS_WEB_API.Controllers
     [Route("[controller]")]
     public class ProductManagementController : ControllerBase
     {
+        #region Data Members
+
+        private readonly IProductManagement __productManagement;
+
+        #endregion
+
         #region Constructor
 
-        public ProductManagementController() { }
+        public ProductManagementController(IProductManagement productManagement)
+        {
+            __productManagement = productManagement;
+        }
 
         #endregion
 
@@ -26,7 +35,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 bool api = true;
-                ProductManagement.AddProductToInventory(newProduct, out api);
+                __productManagement.AddProductToInventory(newProduct, out api);
 
                 if (api)
                 {
@@ -65,7 +74,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 bool api = true;
-                ProductManagement.RemoveProductFromInventory(productName, out api);
+                __productManagement.RemoveProductFromInventory(productName, out api);
 
                 if (api)
                 {
@@ -90,7 +99,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 Product product = null;
-                ProductManagement.ViewProductFromInventory(productName, out product);
+                __productManagement.ViewProductFromInventory(productName, out product);
                 
                 if (product != null)
                 {
@@ -115,7 +124,7 @@ namespace ITS_POS_WEB_API.Controllers
             try
             {
                 bool api = true;
-                ProductManagement.UpdateProductInInventory(productName, productType, productCategory, productQuantity, productPrice, out api);
+                __productManagement.UpdateProductInInventory(productName, productType, productCategory, productQuantity, productPrice, out api);
 
                 if (api)
                 {

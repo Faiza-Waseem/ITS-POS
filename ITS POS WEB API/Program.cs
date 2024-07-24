@@ -4,6 +4,8 @@ using ITS_POS.Services;
 using ITS_POS.Entities;
 using ITS_POS_WEB_API.Middleware;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +45,11 @@ builder.Services.AddSwaggerGen(c =>
         });
 });
 
+builder.Services.AddScoped<IUserAuthentication, UserAuthentication>();
+builder.Services.AddScoped<IProductManagement, ProductManagement>();
+builder.Services.AddScoped<IInventoryManagement, InventoryManagement>();
+builder.Services.AddScoped<ISalesTransaction, SalesTransaction>();
+builder.Services.AddDbContext<DataContextDb>(options => options.UseInMemoryDatabase("ITS-POS"));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -68,7 +75,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = new DataContextDb();
-    ServiceBase.Initialize(context);
+
 };
 
 app.Run();

@@ -9,37 +9,24 @@ using ITS_POS.Data;
 
 namespace ITS_POS.Services
 {
-    public class UserAuthentication : ServiceBase
+    public class UserAuthentication : ServiceBase, IUserAuthentication
     {
         #region DataMembers
 
         public static User CurrentUser { get; set; } = null;
-        //private static DataContextDb __context = null;
+
+        #endregion
+
+        #region Constructor
+
+        public UserAuthentication(DataContextDb context) : base(context) { }
 
         #endregion
 
         #region Functions
 
-        //#region Get Context
-
-        //public static DataContextDb GetContext()
-        //{
-        //    return __context;
-        //}
-
-        //#endregion
-
-        //#region Initialize
-
-        //public static void Initialize(DataContextDb context)
-        //{
-        //    __context = context;
-        //}
-
-        //#endregion
-
         #region User Registration
-        public static void RegisterUser(User newUser, out bool api)
+        public void RegisterUser(User newUser, out bool api)
         {
             //var user = DataContext.Users.SingleOrDefault(u => u.Username == newUser.Username);
             var user = __context.Users.SingleOrDefault(u => u.Username == newUser.Username || u.Email == newUser.Email);
@@ -58,13 +45,13 @@ namespace ITS_POS.Services
             api = true;
         }
 
-        public static void RegisterUser(User newUser)
+        public void RegisterUser(User newUser)
         {
             var api = false;
             RegisterUser(newUser, out api);
         }
 
-        public static void RegisterUser(string username, string password, string email, string role)
+        public void RegisterUser(string username, string password, string email, string role)
         {
             User user = new User { Username = username, Password = password, Email = email, Role = role };
             RegisterUser(user);
@@ -74,7 +61,7 @@ namespace ITS_POS.Services
 
         #region User Authentication
 
-        public static void Login(string username, string password, out bool api)
+        public void Login(string username, string password, out bool api)
         {
             if(CurrentUser != null)
             {
@@ -100,13 +87,13 @@ namespace ITS_POS.Services
             api = true;
         }
 
-        public static void Login(string username, string password)
+        public void Login(string username, string password)
         {
             var api = false;
             Login(username, password, out api);
         }
 
-        public static void Logout()
+        public void Logout()
         {
             if(CurrentUser == null)
             {
@@ -120,7 +107,7 @@ namespace ITS_POS.Services
         #endregion
 
         #region Set User Role
-        public static void SetUserRole(string username, string role, out bool api)
+        public void SetUserRole(string username, string role, out bool api)
         {
             if (CurrentUser == null)
             {
@@ -158,7 +145,7 @@ namespace ITS_POS.Services
             api = true;
         }
 
-        public static void SetUserRole(string username, string role)
+        public void SetUserRole(string username, string role)
         {
             var api = false;
             SetUserRole(username, role, out api);

@@ -49,48 +49,6 @@ namespace ITS_POS.Services
             else if (UserAuthenticationService.CurrentUser.Role != "Cashier")
             {
                 Console.WriteLine("You are an Admin. You don't have access to add a product to the sale.");
-<<<<<<< HEAD:ITS POS/Services/SalesTransaction.cs
-                api = false;
-                return;
-            }
-
-            //var product = DataContext.Inventory.SingleOrDefault(p => p.ProductName == productName);
-            var product = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
-
-            if (product == null)
-            {
-                Console.WriteLine("Product Not Found.");
-                api = false;
-                return;
-            }
-            
-            if (product.ProductQuantity < quantity)
-            {
-                Console.WriteLine($"Inventory has only {product.ProductQuantity} items. Do you want to add them to sale? Yes/No:");
-
-                string change = Console.ReadLine();
-
-                if (change == "Yes")
-                {
-                    quantity = product.ProductQuantity;
-                }
-                else
-                {
-                    Console.WriteLine("Product removed...");
-                    api = false;
-                    return;
-                }
-            }
-
-            product.ProductQuantity -= quantity;
-            //var sp = CurrentSale.SaleProducts.SingleOrDefault(sp => sp.Product.ProductName == product.ProductName);
-            var sp = CurrentSale.SaleProducts.SingleOrDefault(sp => sp.Product.ProductId == product.ProductId);
-            
-            if (sp == null)
-            { 
-                CurrentSale.SaleProducts.Add(new SaleProduct { Sale = CurrentSale, Product = product, Quantity = quantity }); 
-=======
->>>>>>> Faiza:ITS POS/Services/SalesTransactionService.cs
             }
             else
             {

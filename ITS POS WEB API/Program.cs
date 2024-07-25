@@ -16,12 +16,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen(s =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+    s.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-    // Add the custom AuthKey header
-    c.AddSecurityDefinition("AuthKey", new OpenApiSecurityScheme
+    s.AddSecurityDefinition("AuthKey", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
         Name = "AuthKey",
@@ -29,7 +28,7 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Custom Auth Key Header"
     });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    s.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
             {
                 new OpenApiSecurityScheme
@@ -45,10 +44,38 @@ builder.Services.AddSwaggerGen(c =>
         });
 });
 
-builder.Services.AddScoped<IUserAuthentication, UserAuthentication>();
-builder.Services.AddScoped<IProductManagement, ProductManagement>();
-builder.Services.AddScoped<IInventoryManagement, InventoryManagement>();
-builder.Services.AddScoped<ISalesTransaction, SalesTransaction>();
+//builder.Services.AddSwaggerGen(s =>
+//{
+//    s.SwaggerDoc("v2", new OpenApiInfo { Title = "My API", Version = "v2" });
+
+//    s.AddSecurityDefinition("Authorization", new OpenApiSecurityScheme
+//    {
+//        In = ParameterLocation.Header,
+//        Name = "Authorization",
+//        Type = SecuritySchemeType.ApiKey,
+//        Description = "Custom Auth Key Header"
+//    });
+
+//    s.AddSecurityRequirement(new OpenApiSecurityRequirement
+//        {
+//            {
+//                new OpenApiSecurityScheme
+//                {
+//                    Reference = new OpenApiReference
+//                    {
+//                        Type = ReferenceType.SecurityScheme,
+//                        Id = "Authorization"
+//                    }
+//                },
+//                new string[] {}
+//            }
+//        });
+//});
+
+builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
+builder.Services.AddScoped<IProductManagementService, ProductManagementService>();
+builder.Services.AddScoped<IInventoryManagementService, InventoryManagementService>();
+builder.Services.AddScoped<ISalesTransactionService, SalesTransactionService>();
 builder.Services.AddDbContext<DataContextDb>(options => options.UseInMemoryDatabase("ITS-POS"));
 var app = builder.Build();
 
@@ -71,11 +98,5 @@ app.UseMiddleware<AuthKeyMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
-
-using (var scope = app.Services.CreateScope())
-{
-    var context = new DataContextDb();
-
-};
 
 app.Run();

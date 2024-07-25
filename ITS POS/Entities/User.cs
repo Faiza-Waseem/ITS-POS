@@ -15,7 +15,6 @@ namespace ITS_POS.Entities
 
         public int UserId { get { return this.userId; } }
 
-        //public int UserId { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
@@ -23,7 +22,7 @@ namespace ITS_POS.Entities
 
         public override string ToString()
         {
-            return $"User ID: {UserId}\nUser Name: {Username}\nUser Email: {Email}\nUser Role: {Role}";
+            return $"User ID: {UserId}, User Name: {Username}, User Email: {Email}, User Role: {Role}";
         }
     }
 }

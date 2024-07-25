@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ITS_POS.Services
 {
-    public class SalesTransaction : ServiceBase, ISalesTransaction
+    public class SalesTransactionService : ServiceBase, ISalesTransactionService
     {
         #region Data Members
 
@@ -21,78 +21,80 @@ namespace ITS_POS.Services
 
         #region Constructor
 
-        public SalesTransaction(DataContextDb context) : base(context) { }
+        public SalesTransactionService(DataContextDb context) : base(context) { }
 
         #endregion
 
         #region Functions
 
+        #region Get Context
+
+        public override DataContextDb GetContext()
+        {
+            return ServiceBase.__context;
+        }
+
+        #endregion
+
         #region Product Addition to Sale
 
-        public void AddProductToSale(string productName, int quantity, out bool api)
+        public bool AddProductToSale(string productName, int quantity)
         {
-            if (UserAuthentication.CurrentUser == null)
+            bool success = false;
+
+            if (UserAuthenticationService.CurrentUser == null)
             {
                 Console.WriteLine("You are not currently logged in.");
-                api = false;
-                return;
             }
-
-            if (UserAuthentication.CurrentUser.Role != "Cashier")
+            else if (UserAuthenticationService.CurrentUser.Role != "Cashier")
             {
                 Console.WriteLine("You are an Admin. You don't have access to add a product to the sale.");
-                api = false;
-                return;
-            }
-
-            //var product = DataContext.Inventory.FirstOrDefault(p => p.ProductName == productName);
-            var product = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
-
-            if (product == null)
-            {
-                Console.WriteLine("Product Not Found.");
-                api = false;
-                return;
-            }
-            
-            if (product.ProductQuantity < quantity)
-            {
-                Console.WriteLine($"Inventory has only {product.ProductQuantity} items. Do you want to add them to sale? Yes/No:");
-
-                string change = Console.ReadLine();
-
-                if (change == "Yes")
-                {
-                    quantity = product.ProductQuantity;
-                }
-                else
-                {
-                    Console.WriteLine("Product removed...");
-                    api = false;
-                    return;
-                }
-            }
-
-            product.ProductQuantity -= quantity;
-            var sp = CurrentSale.SaleProducts.SingleOrDefault(sp => sp.Product.ProductId == product.ProductId);
-            
-            if (sp == null)
-            { 
-                CurrentSale.SaleProducts.Add(new SaleProduct { Sale = CurrentSale, Product = product, Quantity = quantity }); 
             }
             else
             {
-                sp.Quantity += quantity;
-            }
-            
-            Console.WriteLine("Product Added to Current Sale.");
-            api = true;
-        }
+                //var product = DataContext.Inventory.FirstOrDefault(p => p.ProductName == productName);
+                var product = __context.Inventory.SingleOrDefault(p => p.ProductName == productName);
 
-        public void AddProductToSale(String productName, int quantity)
-        {
-            bool api = false;
-            AddProductToSale(productName, quantity, out api);
+                if (product == null)
+                {
+                    Console.WriteLine("Product Not Found.");
+                }
+                else
+                {
+                    if (product.ProductQuantity < quantity)
+                    {
+                        Console.WriteLine($"Inventory has only {product.ProductQuantity} items. Do you want to add them to sale? Yes/No:");
+
+                        string change = Console.ReadLine();
+
+                        if (change != "Yes")
+                        {
+                            Console.WriteLine("Product removed...");
+                            return false;
+                        }
+
+                        quantity = product.ProductQuantity;
+                    }
+
+                    product.ProductQuantity -= quantity;
+                    var sp = CurrentSale.SaleProducts.SingleOrDefault(sp => sp.Product.ProductId == product.ProductId);
+
+                    if (sp == null)
+                    {
+                        CurrentSale.SaleProducts.Add(new SaleProduct { Sale = CurrentSale, Product = product, Quantity = quantity });
+                    }
+                    else
+                    {
+                        sp.Quantity += quantity;
+                        __context.SaveChanges();
+                    }
+
+                    Console.WriteLine("Product Added to Current Sale.");
+                    success = true;
+                }
+            }
+
+            return success;
         }
 
         #endregion
@@ -103,11 +105,11 @@ namespace ITS_POS.Services
         {
             decimal amount = -1;
 
-            if (UserAuthentication.CurrentUser == null)
+            if (UserAuthenticationService.CurrentUser == null)
             {
                 Console.WriteLine("You are not currently logged in.");
             }
-            else if (UserAuthentication.CurrentUser.Role != "Cashier")
+            else if (UserAuthenticationService.CurrentUser.Role != "Cashier")
             {
                 Console.WriteLine("You are an admin. You don't have access to calculate amount for current sale.");
             }
@@ -132,11 +134,11 @@ namespace ITS_POS.Services
         {
             string receipt = "";
 
-            if (UserAuthentication.CurrentUser == null)
+            if (UserAuthenticationService.CurrentUser == null)
             {
                 Console.WriteLine("You are not currently logged in.");
             }
-            else if (UserAuthentication.CurrentUser.Role != "Cashier")
+            else if (UserAuthenticationService.CurrentUser.Role != "Cashier")
             {
                 Console.WriteLine("You are an admin. You don't have access to generate receipt for current sales.");
             }
@@ -160,46 +162,39 @@ namespace ITS_POS.Services
             return receipt;
         }
 
-        public void TransactSale(out bool api)
+        public bool TransactSale()
         {
-            if (UserAuthentication.CurrentUser == null)
+            bool success = false;
+
+            if (UserAuthenticationService.CurrentUser == null)
             {
                 Console.WriteLine("You are not currently logged in.");
-                api = false;
-                return;
             }
-
-            if (UserAuthentication.CurrentUser.Role != "Cashier")
+            else if (UserAuthenticationService.CurrentUser.Role != "Cashier")
             {
                 Console.WriteLine("You are an Admin. You don't have access to make a sales transaction.");
-                api = false;
-                return;
             }
-            
-            if (CurrentSale.SaleProducts.Count == 0)
+            else if (CurrentSale.SaleProducts.Count == 0)
             {
                 Console.WriteLine("There is no product in current sale.");
-                api = false;
-                return;
+            }
+            else
+            {
+                //DataContext.Sales.Add(CurrentSale);
+
+                __context.Sales.Add(CurrentSale);
+                __context.SaveChanges();
+
+                CurrentSale.SaleProducts.Clear();
+                CurrentSale = new Sale();
+                
+                Console.WriteLine("Current Sale Transaction done.");
+                success = true;
             }
 
-            //DataContext.Sales.Add(CurrentSale);
-
-            __context.Sales.Add(CurrentSale);
-            __context.SaveChanges();
-
-            CurrentSale.SaleProducts.Clear();
-            CurrentSale = new Sale();
-            Console.WriteLine("Current Sale Transaction done.");
-            api = true;
+            return success;
         }
-
-        public void TransactSale()
-        {
-            var api = false;
-            TransactSale(out api);
-        }
-
+      
         #endregion
 
         #endregion

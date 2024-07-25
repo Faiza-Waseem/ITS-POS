@@ -20,7 +20,7 @@ namespace ITS_POS.Entities
 
         public override string ToString()
         {
-            return $"Product ID: {ProductId}\nProduct Name: {ProductName}\nProduct Type: {ProductType}\nProduct Category: {ProductCategory}\nProduct Quantity: {ProductQuantity}\nProduct Price:{ProductPrice}";
+            return $"Product ID: {ProductId}, Product Name: {ProductName}, Product Type: {ProductType}, Product Category: {ProductCategory}, Product Quantity: {ProductQuantity}, Product Price:{ProductPrice}";
         }
     }
 }

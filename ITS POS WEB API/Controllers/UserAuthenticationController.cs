@@ -18,13 +18,13 @@ namespace ITS_POS_WEB_API.Controllers
     {
         #region Data Members
 
-        private readonly IUserAuthentication __userAuthentication;
+        private readonly IUserAuthenticationService __userAuthentication;
 
         #endregion
 
         #region Constructor
 
-        public UserAuthenticationController(IUserAuthentication userAuthentication)
+        public UserAuthenticationController(IUserAuthenticationService userAuthentication)
         {
             __userAuthentication = userAuthentication;
         }
@@ -35,34 +35,19 @@ namespace ITS_POS_WEB_API.Controllers
 
         #region User Registration
 
-        [HttpPost("RegisterUserByObject")]
-        public IActionResult RegisterUser([FromBody]User newUser)
-        {
-            try
-            {
-                bool api = true;
-                __userAuthentication.RegisterUser(newUser, out api);
-
-                if(api)
-                {
-                    return Ok("User is registered successfully.");
-                }
-                
-                return Ok("Error occurred... See Console");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost("RegisterUserByQuery")]
+        [HttpPost("RegisterUser")]
         public IActionResult RegisterUser([FromQuery] string username, [FromQuery] string password, [FromQuery] string email, [FromQuery] string role)
         {
             try
             {
-                User newUser = new User() { Username = username, Password = password, Email = email, Role = role };
-                return RegisterUser(newUser);
+                var success = __userAuthentication.RegisterUser(username, password, email, role);
+
+                if (success)
+                {
+                    return Ok("User is registered successfully.");
+                }
+
+                return Ok("Error occurred... See Console");
             }
             catch (Exception ex)
             {
@@ -79,9 +64,9 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                bool api = true;
-                __userAuthentication.Login(username, password, out api);
-                if (api)
+                var success = __userAuthentication.Login(username, password);
+
+                if (success)
                 {
                     return Ok("User successfully logged in.");
                 }
@@ -99,15 +84,13 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                if (UserAuthentication.CurrentUser != null)
+                var success = __userAuthentication.Logout();
+
+                if (success)
                 {
-                    __userAuthentication.Logout();
                     return Ok("User logged out successfully.");
                 }
-                else
-                {
-                    return Ok("You are not currently logged in.");
-                }
+                return Ok("You are not currently logged in.");
             }
             catch (Exception ex)
             {
@@ -124,10 +107,9 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                bool api = true;
-
-                __userAuthentication.SetUserRole(username, role, out api);
-                if (api)
+                var success = __userAuthentication.SetUserRole(username, role);
+                
+                if (success)
                 {
                     return Ok("Role is changed successfully.");
                 }
@@ -149,8 +131,7 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                var context = ServiceBase.GetContext();
-                var users = context.Users.ToList<User>();
+                var users = __userAuthentication.GetAllUsers();
 
                 return Ok(users);
             }

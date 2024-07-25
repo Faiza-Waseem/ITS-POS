@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ITS_POS.Services
 {
-    public interface IUserAuthentication
+    public interface IUserAuthenticationService
     {
         #region DataMembers
 
@@ -18,25 +18,35 @@ namespace ITS_POS.Services
         #endregion
 
         #region Functions
+        
+        #region Get Context
+
+        public DataContextDb GetContext();
+
+        #endregion
 
         #region User Registration
-        public void RegisterUser(User newUser, out bool api);
-        public void RegisterUser(User newUser);
-        public void RegisterUser(string username, string password, string email, string role);
 
+        public bool RegisterUser(string username, string password, string email, string role);
+       
         #endregion
 
         #region User Authentication
 
-        public void Login(string username, string password, out bool api);
-        public void Login(string username, string password);
-        public void Logout();
+        public bool Login(string username, string password);
+        public bool Logout();
 
         #endregion
 
         #region Set User Role
-        public void SetUserRole(string username, string role, out bool api);
-        public void SetUserRole(string username, string role);
+
+        public bool SetUserRole(string username, string role);
+
+        #endregion
+
+        #region Get All Users
+
+        public List<string> GetAllUsers();
 
         #endregion
 

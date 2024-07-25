@@ -1,5 +1,4 @@
-﻿using ITS_POS.Entities;
-using ITS_POS.Services;
+﻿using ITS_POS.Services;
 using ITS_POS.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Channels;
@@ -12,13 +11,13 @@ namespace ITS_POS_WEB_API.Controllers
     {
         #region Data Members
 
-        private readonly IProductManagement __productManagement;
+        private readonly IProductManagementService __productManagement;
 
         #endregion
 
         #region Constructor
 
-        public ProductManagementController(IProductManagement productManagement)
+        public ProductManagementController(IProductManagementService productManagement)
         {
             __productManagement = productManagement;
         }
@@ -29,34 +28,20 @@ namespace ITS_POS_WEB_API.Controllers
 
         #region Product Addition To Inventory
 
-        [HttpPost("AddProductToInventoryByObject")]
-        public IActionResult AddProductToInventory([FromBody] Product newProduct)
+        [HttpPost("AddProduct")]
+        public IActionResult AddProductToInventory([FromQuery] string name, [FromQuery] string type, [FromQuery] string category, [FromQuery] int quantity, [FromQuery] decimal price)
         {
             try
             {
-                bool api = true;
-                __productManagement.AddProductToInventory(newProduct, out api);
+                var success = __productManagement.AddProductToInventory(name, type, category, quantity, price);
 
-                if (api)
+                if (success)
                 {
                     return Ok("Product is added successfully.");
                 }
 
                 return Ok("Error occurred... See Console");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost("AddProductToInventoryByQuery")]
-        public IActionResult AddProductToInventory([FromQuery] string name, [FromQuery] string type, [FromQuery] string category, [FromQuery] int quantity, [FromQuery] decimal price)
-        {
-            try
-            {
-                Product newProduct = new Product() { ProductName = name, ProductType = type, ProductCategory = category, ProductQuantity = quantity, ProductPrice = price };
-                return AddProductToInventory(newProduct);
+                //Unauthorized("some error");
             }
             catch (Exception ex)
             {
@@ -73,10 +58,9 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                bool api = true;
-                __productManagement.RemoveProductFromInventory(productName, out api);
+                var success = __productManagement.RemoveProductFromInventory(productName);
 
-                if (api)
+                if (success)
                 {
                     return Ok("Product Removed from the Inventory.");
                 }
@@ -98,10 +82,9 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                Product product = null;
-                __productManagement.ViewProductFromInventory(productName, out product);
+                var product = __productManagement.ViewProductFromInventory(productName);
                 
-                if (product != null)
+                if (product != "")
                 {
                     return Ok(product);
                 }
@@ -123,10 +106,9 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                bool api = true;
-                __productManagement.UpdateProductInInventory(productName, productType, productCategory, productQuantity, productPrice, out api);
+                var success = __productManagement.UpdateProductInInventory(productName, productType, productCategory, productQuantity, productPrice);
 
-                if (api)
+                if (success)
                 {
                     return Ok("Product updated successfully.");
                 }
@@ -148,8 +130,7 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                var context = ServiceBase.GetContext();
-                var products = context.Inventory.ToList<Product>();
+                var products = __productManagement.GetAllProducts();
 
                 return Ok(products);
             }

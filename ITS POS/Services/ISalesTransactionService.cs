@@ -1,4 +1,5 @@
-﻿using ITS_POS.Entities;
+﻿using ITS_POS.Data;
+using ITS_POS.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,19 @@ using System.Threading.Tasks;
 
 namespace ITS_POS.Services
 {
-    public interface ISalesTransaction
+    public interface ISalesTransactionService
     {
         #region Functions
 
+        #region Get Context
+
+        public DataContextDb GetContext();
+
+        #endregion
+        
         #region Product Addition to Sale
 
-        public void AddProductToSale(string productName, int quantity, out bool api);
-        public void AddProductToSale(String productName, int quantity);
+        public bool AddProductToSale(string productName, int quantity);
 
         #endregion
 
@@ -23,8 +29,7 @@ namespace ITS_POS.Services
 
         public decimal CalculateAmountForSale();
         public string GenerateReceipt();
-        public void TransactSale(out bool api);
-        public void TransactSale();
+        public bool TransactSale();
 
         #endregion
 

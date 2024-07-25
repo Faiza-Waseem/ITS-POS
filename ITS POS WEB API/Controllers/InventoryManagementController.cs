@@ -12,13 +12,13 @@ namespace ITS_POS_WEB_API.Controllers
     {
         #region Data Members
 
-        private readonly IInventoryManagement __inventoryManagement;
+        private readonly IInventoryManagementService __inventoryManagement;
 
         #endregion
 
         #region Constructor
 
-        public InventoryManagementController(IInventoryManagement inventoryManagement)
+        public InventoryManagementController(IInventoryManagementService inventoryManagement)
         {
             __inventoryManagement = inventoryManagement;
         }
@@ -36,8 +36,7 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                int quantity = -1;
-                __inventoryManagement.TrackProductQuantity(productName, out quantity);
+                var quantity = __inventoryManagement.TrackProductQuantity(productName);
 
                 if (quantity != -1)
                 {
@@ -57,10 +56,9 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                bool api = true;
-                __inventoryManagement.IncreaseProductQuantity(productName, newQuantity, out api);
+                var success = __inventoryManagement.IncreaseProductQuantity(productName, newQuantity);
 
-                if (api)
+                if (success)
                 {
                     return Ok($"Product Quantity is increased by {newQuantity} items.");
                 }
@@ -82,8 +80,7 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                decimal price = -1;
-                __inventoryManagement.CheckProductPrice(productName, out price);
+                var price = __inventoryManagement.CheckProductPrice(productName);
 
                 if (price != -1)
                 {
@@ -103,10 +100,9 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                bool api = true;
-                __inventoryManagement.SetProductPrice(productName, newPrice, out api);
+                var success = __inventoryManagement.SetProductPrice(productName, newPrice);
 
-                if(api)
+                if(success)
                 {
                     return Ok("Product Price is changed successfully.");
                 }
@@ -130,8 +126,7 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                var context = ServiceBase.GetContext();
-                var products = context.Inventory.ToList<Product>();
+                var products = __inventoryManagement.GetInventory();
 
                 return Ok(products);
             }

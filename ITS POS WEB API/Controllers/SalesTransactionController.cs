@@ -12,13 +12,13 @@ namespace ITS_POS_WEB_API.Controllers
     {
         #region Data Members
 
-        private readonly ISalesTransaction __salesTransaction;
+        private readonly ISalesTransactionService __salesTransaction;
 
         #endregion
 
         #region Constructor
 
-        public SalesTransactionController(ISalesTransaction salesTransaction)
+        public SalesTransactionController(ISalesTransactionService salesTransaction)
         {
             __salesTransaction = salesTransaction;
         }
@@ -34,10 +34,9 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                bool api = true;
-                __salesTransaction.AddProductToSale(productName, quantity, out api);
+               var success = __salesTransaction.AddProductToSale(productName, quantity);
 
-                if (api)
+                if (success)
                 {
                     return Ok("Product Added to Current Sale.");
                 }
@@ -59,8 +58,7 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                decimal price = -1;
-                price = __salesTransaction.CalculateAmountForSale();
+                var price = __salesTransaction.CalculateAmountForSale();
 
                 if (price != -1)
                 {
@@ -80,7 +78,7 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                string receipt = __salesTransaction.GenerateReceipt();
+                var receipt = __salesTransaction.GenerateReceipt();
 
                 if (receipt != "")
                 {
@@ -100,10 +98,9 @@ namespace ITS_POS_WEB_API.Controllers
         {
             try
             {
-                bool api = true;
-                __salesTransaction.TransactSale(out api);
+                var success = __salesTransaction.TransactSale();
 
-                if(api)
+                if(success)
                 {
                     return Ok("Current Sale Transaction done.");
                 }

@@ -28,7 +28,7 @@ namespace ITS_POS.Services
 
         #region Get Context
 
-        public static DataContextDb GetContext()
+        public virtual DataContextDb GetContext()
         {
             return __context;
         }

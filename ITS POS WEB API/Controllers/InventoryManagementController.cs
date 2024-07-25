@@ -3,9 +3,11 @@ using ITS_POS.Services;
 using ITS_POS.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Channels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ITS_POS_WEB_API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class InventoryManagementController : ControllerBase

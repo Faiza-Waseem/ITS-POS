@@ -77,6 +77,7 @@ builder.Services.AddScoped<IProductManagementService, ProductManagementService>(
 builder.Services.AddScoped<IInventoryManagementService, InventoryManagementService>();
 builder.Services.AddScoped<ISalesTransactionService, SalesTransactionService>();
 builder.Services.AddDbContext<DataContextDb>(options => options.UseInMemoryDatabase("ITS-POS"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -92,6 +93,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseMiddleware<AuthKeyMiddleware>();
 

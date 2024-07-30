@@ -9,6 +9,7 @@ using ITS_POS.Data;
 using ITS_POS.Entities;
 using ITS_POS.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ITS_POS_WEB_API.Controllers
 {
@@ -35,6 +36,7 @@ namespace ITS_POS_WEB_API.Controllers
 
         #region User Registration
 
+        [AllowAnonymous]
         [HttpPost("RegisterUser")]
         public IActionResult RegisterUser([FromQuery] string username, [FromQuery] string password, [FromQuery] string email, [FromQuery] string role)
         {
@@ -58,7 +60,8 @@ namespace ITS_POS_WEB_API.Controllers
         #endregion
 
         #region User Authentication
-
+        
+        [AllowAnonymous]
         [HttpPost("Login")]
         public IActionResult Login([FromQuery] string username, [FromQuery] string password)
         {

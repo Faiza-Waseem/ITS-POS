@@ -81,13 +81,14 @@ namespace ITS_POS.Services
 
                     if (sp == null)
                     {
-                        CurrentSale.SaleProducts.Add(new SaleProduct { Sale = CurrentSale, Product = product, Quantity = quantity });
+                        CurrentSale.SaleProducts.Add(new SaleProduct { /*Sale = CurrentSale,*/ Product = product, Quantity = quantity });
                     }
                     else
                     {
                         sp.Quantity += quantity;
-                        __context.SaveChanges();
                     }
+                    
+                    __context.SaveChanges();
 
                     Console.WriteLine("Product Added to Current Sale.");
                     success = true;

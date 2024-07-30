@@ -32,11 +32,17 @@ namespace ITS_POS.Data
             modelBuilder.Entity<Sale>().HasKey(s => s.SaleId);
             modelBuilder.Entity<SaleProduct>().HasKey(sp => sp.SaleProductId);
 
-            modelBuilder.Entity<SaleProduct>().HasOne(sp => sp.Sale)
-                .WithMany(s => s.SaleProducts).HasForeignKey(sp => sp.SaleId);
+            modelBuilder.Entity<SaleProduct>()
+                .HasOne(sp => sp.Product)
+                .WithMany()
+                .HasForeignKey(sp => sp.ProductId);
 
-            modelBuilder.Entity<SaleProduct>().HasOne(sp => sp.Product)
-                .WithMany(p => p.Sales).HasForeignKey(sp => sp.ProductId);
+            modelBuilder.Entity<Sale>()
+               .HasMany(s => s.SaleProducts)
+               .WithOne()
+               .HasForeignKey(sp => sp.ProductId);
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

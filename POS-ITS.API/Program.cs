@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using POS_ITS.API.AutoMapper;
 using POS_ITS.API.Middlewares;
 using POS_ITS.DATA;
 using POS_ITS.REPOSITORIES.InventoryRepository;
@@ -36,6 +38,12 @@ builder.Services.AddScoped<ISalesService, SalesService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
+
+builder.Logging.ClearProviders();
+var log4netConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "log4net.config");
+builder.Logging.AddLog4Net(log4netConfigPath);
 builder.Services.AddSwaggerGen();
 
 //builder.Services.AddAuthentication(options =>

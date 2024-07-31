@@ -1,5 +1,5 @@
 ﻿using Moq;
-using POS_ITS.MODEL;
+using POS_ITS.API.MODEL.Entities;
 using POS_ITS.REPOSITORIES.UserRepository;
 using POS_ITS.SERVICE.UserService;
 

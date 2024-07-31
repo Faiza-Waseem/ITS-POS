@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using POS_ITS.MODEL;
+using POS_ITS.API.MODEL.Entities;
 
 namespace POS_ITS.API.UNITTEST.RepositoryTests.ProductRepositoryTests
 {

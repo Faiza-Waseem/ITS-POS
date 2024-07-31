@@ -1,4 +1,4 @@
-﻿using POS_ITS.MODEL;
+﻿using POS_ITS.MODEL.Entities;
 using POS_ITS.REPOSITORIES.UserRepository;
 using System;
 using System.Collections.Generic;

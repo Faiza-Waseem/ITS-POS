@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using POS_ITS.MODEL;
+using POS_ITS.MODEL.Entities;
 
 namespace POS_ITS.DATA
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace POS_ITS.MODEL
+namespace POS_ITS.MODEL.Entities
 {
     public class Sale
     {

@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace POS_ITS.MODEL
+namespace POS_ITS.MODEL.Entities
 {
     public class Product
     {
         [Required]
         public int ProductId { get; set; }
-        
+
         [Required]
         [StringLength(100)]
         public string ProductName { get; set; } = string.Empty;

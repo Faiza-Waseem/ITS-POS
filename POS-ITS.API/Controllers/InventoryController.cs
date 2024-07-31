@@ -11,10 +11,12 @@ namespace POS_ITS.API.Controllers
     public class InventoryController : ControllerBase
     {
         private readonly IInventoryService _service;
+        private readonly ILogger<InventoryController> _logger;
 
-        public InventoryController(IInventoryService service)
+        public InventoryController(IInventoryService service, ILogger<InventoryController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         [HttpGet("TrackProductQuantity")]
@@ -27,12 +29,15 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                _logger.LogInformation("Tracking Product Quantity started.");
                 var quantity = await _service.TrackProductQuantityAsync(id);
+                _logger.LogInformation($"Product Quantity tracked successfully.");
+
                 return Ok(quantity);
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
@@ -48,12 +53,15 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                _logger.LogInformation("Increase Product Quantity started.");
                 await _service.IncreaseProductQuantityAsync(id, quantity);
+                _logger.LogInformation("Product Quantity increased successfully.");
+
                 return Ok("Product Quantity increased successfully.");
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
@@ -68,12 +76,15 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                _logger.LogInformation("Get Product Price started.");
                 var price = await _service.GetProductPriceAsync(id);
+                _logger.LogInformation("Product Price checked successfully.");
+                
                 return Ok(price);
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
@@ -89,12 +100,15 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                _logger.LogInformation("Changing Product Price started.");
                 await _service.ChangeProductPriceAsync(id, price);
+                _logger.LogInformation("Product Price changed successfully.");
+
                 return Ok("Product Price changed successfully.");
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }

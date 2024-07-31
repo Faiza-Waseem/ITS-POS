@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using POS_ITS.DATA;
-using POS_ITS.MODEL;
 using System.Security.Claims;
 using System.Text;
 using System.Data;
+using POS_ITS.MODEL.Entities;
 
 namespace POS_ITS.REPOSITORIES.UserRepository
 {

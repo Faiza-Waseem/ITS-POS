@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using POS_ITS.MODEL;
+using POS_ITS.MODEL.Entities;
+using POS_ITS.MODEL.DTOs.UserDTOs;
 using POS_ITS.SERVICE.UserService;
+using AutoMapper;
+using POS_ITS.MODEL.DTOs.ProductDTOs;
 
 namespace POS_ITS.API.Controllers
 {
@@ -11,48 +14,58 @@ namespace POS_ITS.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _service;
+        private readonly IMapper _mapper;
+        ILogger<UserController> _logger;
 
-        public UserController(IUserService service)
+        public UserController(IUserService service, IMapper mapper, ILogger<UserController> logger)
         {
             _service = service;
+            _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet("GetAllUsers")]
-        public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers()
         {
             try
             {
+                _logger.LogInformation("Getting All Users started");
                 var users = await _service.GetAllUsersAsync();
+                _logger.LogInformation("Users are displayed successfully.");
+
                 return Ok(users);
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
         [HttpGet("GetUserById")]
-        public async Task<ActionResult<User>> GetUserById(int id)
+        public async Task<ActionResult<UserDTO>> GetUserById(int id)
         {
             try
             {
+                _logger.LogInformation("Getting user by id started.");
                 var user = await _service.GetUserByIdAsync(id);
                 if (user == null)
                 {
+                    _logger.LogInformation("No user with given id was found.");
                     return NotFound();
                 }
+                _logger.LogInformation("User is displayed successfully.");
                 return Ok(user);
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
         [HttpPost("RegisterUser")]
-        public async Task<ActionResult> RegisterUserAsync(User user)
+        public async Task<ActionResult> RegisterUserAsync(UserDTO userDto)
         {
             if (!ModelState.IsValid)
             {
@@ -61,12 +74,17 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                var user = _mapper.Map<User>(userDto);
+
+                _logger.LogInformation("Registering User started."); 
                 await _service.RegisterUserAsync(user);
-                return CreatedAtAction(nameof(GetUserById), new { id = user.UserId }, user);
+                _logger.LogInformation("User is registered successfully.");
+                
+                return CreatedAtAction(nameof(GetUserById), new { id = userDto.UserId }, userDto);
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
@@ -81,12 +99,15 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                _logger.LogInformation("Login started.");
                 await _service.LoginAsync(usernameEmail, password);
+                _logger.LogInformation("User logged in successfully.");
+
                 return Ok("User logged in successfully.");
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
@@ -101,12 +122,15 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                _logger.LogInformation("Changing User Role started.");
                 await _service.SetUserRoleAsync(id, role);
+                _logger.LogInformation("Role for the user with id changed successfully.");
+
                 return Ok("Role changed successfully.");
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
@@ -121,12 +145,15 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                _logger.LogInformation("User logging out started.");
                 _service.Logout();
+                _logger.LogInformation("User logged out successfully.");
+
                 return Ok("User logged out successfully.");
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }

@@ -10,13 +10,15 @@ namespace POS_ITS.API.Controllers
     public class SalesController : ControllerBase
     {
         private readonly ISalesService _service;
+        private readonly ILogger<SalesController> _logger;
 
-        public SalesController(ISalesService service)
+        public SalesController(ISalesService service, ILogger<SalesController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
-        [Authorize(Roles = "Cashier")]
+        //[Authorize(Roles = "Cashier")]
         [HttpPost("AddProductToCurrentSale")]
         public async Task<ActionResult> AddProductToSaleAsync(int id, int quantity)
         {
@@ -27,17 +29,20 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                _logger.LogInformation("Adding product to current sale started.");
                 await _service.AddProductToSaleAsync(id, quantity);
+                _logger.LogInformation("Product added to current sale successfully");
+
                 return Ok("Product added to current sale successfully.");
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
-        [Authorize(Roles = "Cashier")]
+        //[Authorize(Roles = "Cashier")]
         [HttpGet("CalculateAmountForCurrentSale")]
         public async Task<ActionResult<decimal>> CalculateAmountForSale()
         {
@@ -48,17 +53,20 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                _logger.LogInformation("Calculating amount for current sale started.");
                 var amount = _service.CalculateAmountForSale();
+                _logger.LogInformation("Amount calculated for current sale successfully.");
+
                 return Ok(amount);
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
-        [Authorize(Roles = "Cashier")]
+        //[Authorize(Roles = "Cashier")]
         [HttpGet("GenerateReceiptForCurrentSale")]
         public async Task<ActionResult<string>> GenerateReceipt()
         {
@@ -69,17 +77,20 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                _logger.LogInformation("Generating Receipt for current sale started.");
                 var receipt = _service.GenerateReceipt();
+                _logger.LogInformation("Receipt for current sale generated successfully.");
+
                 return Ok(receipt);
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
-        [Authorize(Roles = "Cashier")]
+        //[Authorize(Roles = "Cashier")]
         [HttpGet("TransactCurrentSale")]
         public async Task<ActionResult> TransactSaleAsync()
         {
@@ -90,12 +101,15 @@ namespace POS_ITS.API.Controllers
 
             try
             {
+                _logger.LogInformation("Transacting current sale started.");
                 await _service.TransactSaleAsync();
+                _logger.LogInformation("Current sale transacted successfully.");
+
                 return Ok("Current Sale Transacted successfully.");
             }
             catch (Exception ex)
             {
-                // Log exception (logging code can be added here)
+                _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }

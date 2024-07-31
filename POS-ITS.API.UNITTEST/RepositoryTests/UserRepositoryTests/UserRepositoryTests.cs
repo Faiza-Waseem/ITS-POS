@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using POS_ITS.API.MODEL.Entities;
 using POS_ITS.DATA;
-using POS_ITS.MODEL;
 using POS_ITS.REPOSITORIES.UserRepository;
 
 namespace POS_ITS.API.UNITTEST.RepositoryTests.UserRepositoryTests

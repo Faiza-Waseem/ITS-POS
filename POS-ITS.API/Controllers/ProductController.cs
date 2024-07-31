@@ -64,7 +64,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost("AddProductToInventory")]
         public async Task<ActionResult<ProductDTO>> AddProduct([FromBody] ProductDTO productDto)
         {
@@ -90,7 +90,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("UpdateProduct")]
         public async Task<IActionResult> UpdateProduct(int id, ProductDTO productDto)
         {
@@ -116,7 +116,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("RemoveProductFromInventory")]
         public async Task<IActionResult> DeleteProduct(int id)
         {

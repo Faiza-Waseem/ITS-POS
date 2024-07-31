@@ -56,11 +56,11 @@ namespace POS_ITS.SERVICE.UserService
             }
         }
 
-        public async Task LoginAsync(string usernameEmail, string password)
+        public async Task<int> LoginAsync(string usernameEmail, string password)
         {
             try
             {
-                await _repository.LoginAsync(usernameEmail, password);
+                return await _repository.LoginAsync(usernameEmail, password);
             }
             catch (Exception ex)
             {

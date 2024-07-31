@@ -75,7 +75,7 @@ namespace POS_ITS.REPOSITORIES.UserRepository
             }
         }
 
-        public async Task LoginAsync(string usernameEmail, string password)
+        public async Task<int> LoginAsync(string usernameEmail, string password)
         {
             try
             {
@@ -104,6 +104,8 @@ namespace POS_ITS.REPOSITORIES.UserRepository
                     Password = user.Password,
                     Role = user.Role
                 };
+
+                return CurrentUser.UserId;
             }
             catch (Exception ex)
             {

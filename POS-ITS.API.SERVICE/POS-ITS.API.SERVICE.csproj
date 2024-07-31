@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\POS-ITS.API.REPOSITORY\POS-ITS.API.REPOSITORY.csproj" />
+  </ItemGroup>
+
 </Project>

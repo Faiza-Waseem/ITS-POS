@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ITS_POS.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using POS_ITS.MODEL;
 
-using Microsoft.EntityFrameworkCore;
-
-namespace ITS_POS.Data
+namespace POS_ITS.DATA
 {
-    public class DataContextDb : DbContext
+    public class DataDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Product> Inventory { get; set; }
         public DbSet<Sale> Sales { get; set; }
-        public DbSet<SaleProduct> SaleProducts { get; set; }
+        public DbSet<SaleProduct> SalesProducts { get; set; }
 
-        public DataContextDb() { }
-        public DataContextDb(DbContextOptions<DataContextDb> options): base(options) { }
+        public DataDbContext() { }
+        public DataDbContext(DbContextOptions<DataDbContext> options) : base(options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -35,12 +29,14 @@ namespace ITS_POS.Data
             modelBuilder.Entity<SaleProduct>()
                 .HasOne(sp => sp.Product)
                 .WithMany()
-                .HasForeignKey(sp => sp.ProductId);
+                .HasForeignKey(sp => sp.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Sale>()
-               .HasMany(s => s.SaleProducts)
-               .WithOne()
-               .HasForeignKey(sp => sp.SaleProductId);
+                .HasMany(sp => sp.SaleProducts)
+                .WithOne()
+                .HasForeignKey(sp => sp.SaleProductId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);
         }

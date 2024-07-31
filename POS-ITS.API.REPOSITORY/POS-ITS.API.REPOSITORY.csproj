@@ -2,9 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>POS_ITS.API.REPOSITORY</RootNamespace>
+    <RootNamespace>POS_ITS.API.REPOSITORIES</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\POS-ITS.API.DATA\POS-ITS.API.DATA.csproj" />
+    <ProjectReference Include="..\POS-ITS.API.MODEL\POS-ITS.API.MODEL.csproj" />
+  </ItemGroup>
 
 </Project>

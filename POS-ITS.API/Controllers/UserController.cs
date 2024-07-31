@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using POS_ITS.API.Middlewares;
 
 namespace POS_ITS.API.Controllers
 {
@@ -44,7 +45,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -58,7 +60,8 @@ namespace POS_ITS.API.Controllers
                 if (user == null)
                 {
                     _logger.LogInformation("No user with given id was found.");
-                    return NotFound();
+                    throw new NotFoundException("No user with given id was found.");
+                    //return NotFound();
                 }
                 _logger.LogInformation("User is displayed successfully.");
                 return Ok(user);
@@ -66,7 +69,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -91,7 +95,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -117,7 +122,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -140,7 +146,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -163,7 +170,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 

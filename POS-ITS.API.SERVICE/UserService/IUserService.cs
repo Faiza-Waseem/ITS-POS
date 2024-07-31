@@ -12,7 +12,7 @@ namespace POS_ITS.SERVICE.UserService
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task<User> GetUserByIdAsync(int id);
         Task RegisterUserAsync(User user);
-        Task LoginAsync(string usernameEmail, string password);
+        Task<int> LoginAsync(string usernameEmail, string password);
         Task SetUserRoleAsync(int id, string role);
         void Logout();
     }

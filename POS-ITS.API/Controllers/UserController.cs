@@ -6,6 +6,10 @@ using POS_ITS.MODEL.DTOs.UserDTOs;
 using POS_ITS.SERVICE.UserService;
 using AutoMapper;
 using POS_ITS.MODEL.DTOs.ProductDTOs;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace POS_ITS.API.Controllers
 {
@@ -15,13 +19,15 @@ namespace POS_ITS.API.Controllers
     {
         private readonly IUserService _service;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
         ILogger<UserController> _logger;
 
-        public UserController(IUserService service, IMapper mapper, ILogger<UserController> logger)
+        public UserController(IUserService service, IMapper mapper, ILogger<UserController> logger, IConfiguration configuration)
         {
             _service = service;
             _mapper = mapper;
             _logger = logger;
+            _configuration = configuration;
         }
 
         [HttpGet("GetAllUsers")]
@@ -90,7 +96,7 @@ namespace POS_ITS.API.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult> Login(string usernameEmail, string password)
+        public async Task<ActionResult<string>> Login(string usernameEmail, string password)
         {
             if (!ModelState.IsValid)
             {
@@ -100,10 +106,13 @@ namespace POS_ITS.API.Controllers
             try
             {
                 _logger.LogInformation("Login started.");
-                await _service.LoginAsync(usernameEmail, password);
+                var id = await _service.LoginAsync(usernameEmail, password);
                 _logger.LogInformation("User logged in successfully.");
 
-                return Ok("User logged in successfully.");
+                var user = await _service.GetUserByIdAsync(id);
+
+                var token = CreateToken(user);
+                return Ok($"User logged in successfully. Token: {token}");
             }
             catch (Exception ex)
             {
@@ -156,6 +165,29 @@ namespace POS_ITS.API.Controllers
                 _logger.LogError($"Internal server error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+
+        private string CreateToken(User user)
+        {
+            List<Claim> claims = new List<Claim> {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JwtSettings:Issuer"],
+                audience: _configuration["JwtSettings:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: creds
+            );
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwt;
         }
     }
 }

@@ -8,7 +8,6 @@ namespace POS_ITS.API.Middlewares
         private readonly RequestDelegate _next;
         private const string AuthKeyName = "AuthKey";
         private const string AuthKeyValue = "DemoTrainingKey";
-        private const string AuthTokenName = "Authorization";
 
         public AuthKeyMiddleware(RequestDelegate next)
         {

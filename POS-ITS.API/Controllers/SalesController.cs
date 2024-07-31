@@ -38,7 +38,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -62,7 +63,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -86,7 +88,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -110,7 +113,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }

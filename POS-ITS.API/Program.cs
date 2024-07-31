@@ -136,6 +136,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<AuthKeyMiddleware>();
 
 app.UseAuthorization();

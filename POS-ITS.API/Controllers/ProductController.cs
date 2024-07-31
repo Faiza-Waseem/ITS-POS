@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using POS_ITS.MODEL.DTOs.ProductDTOs;
 using POS_ITS.MODEL.Entities;
 using POS_ITS.SERVICE.ProductService;
+using POS_ITS.API.Middlewares;
 
 namespace POS_ITS.API.Controllers
 {
@@ -37,7 +38,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -53,14 +55,16 @@ namespace POS_ITS.API.Controllers
                 if (product == null)
                 {
                     _logger.LogInformation("No product with given id was found.");
-                    return NotFound();
+                    throw new NotFoundException("No product with given id was found.");
+                    //return NotFound();
                 }
                 return Ok(product);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -86,7 +90,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -112,7 +117,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -131,7 +137,8 @@ namespace POS_ITS.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error: {ex.Message}");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                throw;
+                //return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }

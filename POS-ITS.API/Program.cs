@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Azure.Cosmos;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using POS_ITS.API.AutoMapper;
@@ -23,10 +24,39 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<DataDbContext>();
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
-builder.Services.AddScoped<ISalesRepository, SalesRepository>();
+// Configure Cosmos DB
+var cosmosClient = new CosmosClient(builder.Configuration["CosmosDbSettings:EndpointUri"], builder.Configuration["CosmosDbSettings:PrimaryKey"]);
+builder.Services.AddSingleton(cosmosClient);
+IConfiguration configuration = builder.Configuration;
+
+// Register repositories
+//builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRepository>(provider =>
+{
+    var client = provider.GetRequiredService<CosmosClient>();
+    return new UserCosmosRepository(client, configuration);
+});
+
+//builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductRepository>(provider =>
+{
+    var client = provider.GetRequiredService<CosmosClient>();
+    return new ProductCosmosRepository(client, configuration);
+});
+
+//builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
+builder.Services.AddScoped<IInventoryRepository>(provider =>
+{
+    var client = provider.GetRequiredService<CosmosClient>();
+    return new InventoryCosmosRepository(client, configuration);
+});
+
+//builder.Services.AddScoped<ISalesRepository, SalesRepository>();
+builder.Services.AddScoped<ISalesRepository>(provider =>
+{
+    var client = provider.GetRequiredService<CosmosClient>();
+    return new SalesCosmosRepository(client, configuration);
+});
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();

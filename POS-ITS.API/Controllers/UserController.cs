@@ -11,6 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using POS_ITS.API.Middlewares;
+using Microsoft.AspNetCore.Authorization;
 
 namespace POS_ITS.API.Controllers
 {
@@ -127,6 +128,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("ChangeUserRole")]
         public async Task<ActionResult> SetUserRoleAsync(int id, string role)
         {

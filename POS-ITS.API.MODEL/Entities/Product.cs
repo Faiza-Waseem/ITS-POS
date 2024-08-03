@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,6 +10,11 @@ namespace POS_ITS.MODEL.Entities
 {
     public class Product
     {
+        [JsonProperty("id")]
+        [Required]
+        [RegularExpression("^product_\\d+$")]
+        public string Id { get; set; }
+
         [Required]
         public int ProductId { get; set; }
 

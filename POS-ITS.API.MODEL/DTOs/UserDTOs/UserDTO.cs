@@ -5,11 +5,17 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace POS_ITS.MODEL.DTOs.UserDTOs
 {
     public class UserDTO
     {
+        [JsonProperty("id")]
+        [Required(ErrorMessage = "Id is required.")]
+        [RegularExpression("^user_\\d+$", ErrorMessage = "The id must be in the format: \"user_UserId\".")]
+        public string Id { get; set; }
+        
         [Required(ErrorMessage = "User ID is Required.")]
         public int UserId { get; set; }
 

@@ -26,11 +26,11 @@ namespace POS_ITS.DATA
             modelBuilder.Entity<Sale>().HasKey(s => s.SaleId);
             modelBuilder.Entity<SaleProduct>().HasKey(sp => sp.SaleProductId);
 
-            modelBuilder.Entity<SaleProduct>()
-                .HasOne(sp => sp.Product)
-                .WithMany()
-                .HasForeignKey(sp => sp.ProductId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<SaleProduct>()
+            //    .HasOne(sp => sp.Product)
+            //    .WithMany()
+            //    .HasForeignKey(sp => sp.ProductId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Sale>()
                 .HasMany(sp => sp.SaleProducts)

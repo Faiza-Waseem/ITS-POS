@@ -28,11 +28,11 @@ namespace POS_ITS.SERVICE.SalesService
             }
         }
 
-        public decimal CalculateAmountForSale()
+        public async Task<decimal> CalculateAmountForSale()
         {
             try
             {
-                return _repository.CalculateAmountForSale();
+                return await _repository.CalculateAmountForSale();
             }
             catch (Exception ex)
             {
@@ -40,11 +40,11 @@ namespace POS_ITS.SERVICE.SalesService
             }
         }
 
-        public string GenerateReceipt()
+        public async Task<string> GenerateReceipt()
         {
             try
             {
-                return _repository.GenerateReceipt();
+                return await _repository.GenerateReceipt();
             }
             catch (Exception ex)
             {

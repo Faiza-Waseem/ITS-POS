@@ -55,7 +55,7 @@ namespace POS_ITS.API.Controllers
             try
             {
                 _logger.LogInformation("Calculating amount for current sale started.");
-                var amount = _service.CalculateAmountForSale();
+                var amount = await _service.CalculateAmountForSale();
                 _logger.LogInformation("Amount calculated for current sale successfully.");
 
                 return Ok(amount);
@@ -80,7 +80,7 @@ namespace POS_ITS.API.Controllers
             try
             {
                 _logger.LogInformation("Generating Receipt for current sale started.");
-                var receipt = _service.GenerateReceipt();
+                var receipt = await _service.GenerateReceipt();
                 _logger.LogInformation("Receipt for current sale generated successfully.");
 
                 return Ok(receipt);

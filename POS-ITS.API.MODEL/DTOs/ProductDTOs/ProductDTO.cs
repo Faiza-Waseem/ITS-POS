@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,6 +10,11 @@ namespace POS_ITS.MODEL.DTOs.ProductDTOs
 {
     public class ProductDTO
     {
+        [JsonProperty("id")]
+        [Required(ErrorMessage = "Id is required.")]
+        [RegularExpression("^product_\\d+$", ErrorMessage = "The id must be in the format: \"product_ProductId\".")]
+        public string Id { get; set; }
+
         [Required(ErrorMessage = "Product ID is required.")]
         public int ProductId { get; set; }
 

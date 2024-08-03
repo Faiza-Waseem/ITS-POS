@@ -9,8 +9,8 @@ namespace POS_ITS.REPOSITORIES.SalesRepository
     public interface ISalesRepository
     {
         Task AddProductToSaleAsync(int id, int quantity);
-        decimal CalculateAmountForSale();
-        string GenerateReceipt();
+        Task<decimal> CalculateAmountForSale();
+        Task<string> GenerateReceipt();
         Task TransactSaleAsync();
     }
 }

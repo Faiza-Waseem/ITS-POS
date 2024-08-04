@@ -52,7 +52,6 @@ namespace POS_ITS.REPOSITORIES.SalesRepository
             }
         }
 
-
         public async Task AddProductToSaleAsync(int id, int quantity)
         {
             try

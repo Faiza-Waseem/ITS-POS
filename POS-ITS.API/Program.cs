@@ -1,6 +1,7 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Identity.Web;
@@ -31,42 +32,42 @@ IConfiguration configuration = builder.Configuration;
 
 CosmosClient cosmosClient = null;
 string databaseName = "";
-string jwtissuer = "";
-string jwtaudience = "";
-string jwtkey = "";
 
 if (builder.Environment.IsProduction())
 {
-    var keyVaultURL = configuration["KeyVaultSettings:KeyVaultURL"]!;
+    var keyVaultURI = configuration["KeyVaultSettings:KeyVaultURI"]!;
     var clientID = configuration["KeyVaultSettings:ClientID"]!;
     var clientSecret = configuration["KeyVaultSettings:ClientSecret"]!;
     var directoryID = configuration["KeyVaultSettings:DirectoryID"]!;
 
     var credential = new ClientSecretCredential(directoryID, clientID, clientSecret);
 
-    builder.Configuration.AddAzureKeyVault(keyVaultURL, clientID, clientSecret, new DefaultKeyVaultSecretManager());
+    builder.Configuration.AddAzureKeyVault(keyVaultURI, clientID, clientSecret, new DefaultKeyVaultSecretManager());
 
-    var client = new SecretClient(new Uri(keyVaultURL), credential);
+    var client = new SecretClient(new Uri(keyVaultURI), credential);
 
     cosmosClient = new CosmosClient(client.GetSecret("ProdEndpointUri").Value.Value.ToString(), client.GetSecret("ProdPrimaryKey").Value.Value.ToString());
     builder.Services.AddSingleton(cosmosClient);
 
     databaseName = client.GetSecret("ProdDatabaseName").Value.Value.ToString();
 
-    jwtissuer = client.GetSecret("ProdJWTIssuer").Value.Value.ToString();
-    jwtaudience = client.GetSecret("ProdJWTAudience").Value.Value.ToString();
-    jwtkey = client.GetSecret("ProdJWTKey").Value.Value.ToString();
-}
+    var jwtKey = client.GetSecret("ProdJWTKey").Value.Value.ToString();
+    builder.Configuration["JwtSettings:Key"] = jwtKey;
 
-if (builder.Environment.IsDevelopment())
+    var azureClientId = client.GetSecret("AzureClientId").Value.Value.ToString();
+    var azureTenantId = client.GetSecret("AzureTenantId").Value.Value.ToString();
+    var azureAudience = client.GetSecret("AzureAudience").Value.Value.ToString();
+
+    builder.Configuration["AzureAd:ClientId"] = azureClientId;
+    builder.Configuration["AzureAd:TenantId"] = azureTenantId;
+    builder.Configuration["AzureAd:Audience"] = azureAudience;
+}
+else
 {
     cosmosClient = new CosmosClient(configuration["CosmosDbSettings:EndpointUri"]!, configuration["CosmosDbSettings:PrimaryKey"]!);
     builder.Services.AddSingleton(cosmosClient);
     databaseName = configuration["CosmosDbSettings:DatabaseName"]!;
 
-    jwtissuer = configuration["JwtSettings:Issuer"]!;
-    jwtaudience = configuration["JwtSettings:Audience"]!;
-    jwtkey = configuration["JwtSettings:Key"]!;
 }
 // Register repositories
 //builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -141,14 +142,15 @@ builder.Services.AddSwaggerGen(s =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(options =>
 {
     options.TokenValidationParameters.ValidateIssuer = true;
-    options.TokenValidationParameters.ValidAudience = configuration["AzureAd:Audience"];
+    options.TokenValidationParameters.ValidAudience = builder.Configuration["AzureAd:Audience"];
 },
 microsoftidentityoptions =>
 {
-    configuration.GetSection("AzureAd").Bind(microsoftidentityoptions);
+    builder.Configuration.GetSection("AzureAd").Bind(microsoftidentityoptions);
 },
 "Bearer",
 true);
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -158,9 +160,9 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidIssuer = jwtissuer,
-        ValidAudience = jwtaudience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtkey)),
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"]!,
+        ValidAudience = builder.Configuration["JwtSettings:Audience"]!,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!)),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,

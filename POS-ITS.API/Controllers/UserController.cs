@@ -186,7 +186,7 @@ namespace POS_ITS.API.Controllers
                 _logger.LogInformation("User logging out started.");
                 _service.Logout();
                 _logger.LogInformation("User logged out successfully.");
-
+                
                 return Ok("User logged out successfully.");
             }
             catch (Exception ex)

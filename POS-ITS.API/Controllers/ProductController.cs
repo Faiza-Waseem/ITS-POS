@@ -6,9 +6,12 @@ using POS_ITS.MODEL.DTOs.ProductDTOs;
 using POS_ITS.MODEL.Entities;
 using POS_ITS.SERVICE.ProductService;
 using POS_ITS.API.Middlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web.Resource;
 
 namespace POS_ITS.API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -24,6 +27,7 @@ namespace POS_ITS.API.Controllers
             _logger = logger;
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserReadScope")]
         [HttpGet("GetAllProducts")]
         public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts()
         {
@@ -43,6 +47,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserReadScope")]
         [HttpGet("GetProductById")]
         public async Task<ActionResult<ProductDTO>> GetProductById(int id)
         {
@@ -68,7 +73,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Admin")]
         [HttpPost("AddProductToInventory")]
         public async Task<ActionResult<ProductDTO>> AddProduct([FromBody] ProductDTO productDto)
         {
@@ -95,7 +100,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Admin")]
         [HttpPut("UpdateProduct")]
         public async Task<IActionResult> UpdateProduct(int id, ProductDTO productDto)
         {
@@ -122,7 +127,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Admin")]
         [HttpDelete("RemoveProductFromInventory")]
         public async Task<IActionResult> DeleteProduct(int id)
         {

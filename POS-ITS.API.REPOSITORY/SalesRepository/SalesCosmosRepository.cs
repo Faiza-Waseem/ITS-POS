@@ -1,12 +1,10 @@
 ﻿using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Configuration;
 using POS_ITS.MODEL.Entities;
 
 namespace POS_ITS.REPOSITORIES.SalesRepository
 {
     public class SalesCosmosRepository : ISalesRepository
     {
-        private readonly IConfiguration _configuration;
         private readonly Container _salesContainer;
         private readonly Container _saleProductsContainer;
         private readonly Container _productContainer;
@@ -15,10 +13,8 @@ namespace POS_ITS.REPOSITORIES.SalesRepository
         private static int saleProductCount = 0;
         private static Sale CurrentSale { get; set; } = new Sale();
 
-        public SalesCosmosRepository(CosmosClient client, IConfiguration configuration)
+        public SalesCosmosRepository(CosmosClient client, string databaseName)
         {
-            _configuration = configuration;
-            var databaseName = configuration["CosmosDbSettings:DatabaseName"];
             var salesContainerName = "Sales";
             _salesContainer = client.GetContainer(databaseName, salesContainerName);
             var saleProductsContainerName = "SaleProducts";
@@ -148,8 +144,8 @@ namespace POS_ITS.REPOSITORIES.SalesRepository
                     decimal total = product.ProductPrice * (decimal)saleProduct.Quantity;
                     receipt += $"{product.ProductId}\t\t\t{product.ProductName}\t\t\t{saleProduct.Quantity}\t\t\t{product.ProductPrice}\t\t{total}\n";
                 }
-
-                receipt += $"\nTotal Amount to be paid: {CalculateAmountForSale()}\n";
+                decimal amount = await CalculateAmountForSale();
+                receipt += $"\nTotal Amount to be paid: {amount}\n";
 
                 return receipt;
             }

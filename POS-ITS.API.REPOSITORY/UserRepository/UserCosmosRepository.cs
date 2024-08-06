@@ -1,6 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using POS_ITS.REPOSITORIES.UserRepository;
 using User = POS_ITS.MODEL.Entities.User;
 
@@ -8,15 +7,12 @@ namespace POS_ITS.REPOSITORIES.UserRepository
 {
     public class UserCosmosRepository : IUserRepository
     {
-        private readonly IConfiguration _configuration;
         private readonly Container _userContainer;
 
         private static User CurrentUser { get; set; } = null;
 
-        public UserCosmosRepository(CosmosClient client, IConfiguration configuration)
+        public UserCosmosRepository(CosmosClient client, string databaseName)
         {
-            _configuration = configuration;
-            var databaseName = configuration["CosmosDbSettings:DatabaseName"];
             var userContainerName = "Users";
             _userContainer = client.GetContainer(databaseName, userContainerName);
         }

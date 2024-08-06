@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using POS_ITS.DATA;
-using POS_ITS.MODEL;
+using POS_ITS.MODEL.Entities;
 using POS_ITS.REPOSITORIES.InventoryRepository;
 using System;
 using System.Collections.Generic;

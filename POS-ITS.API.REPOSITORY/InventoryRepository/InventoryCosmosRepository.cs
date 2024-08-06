@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Configuration;
 using POS_ITS.DATA;
 using POS_ITS.MODEL.Entities;
 using POS_ITS.REPOSITORIES.InventoryRepository;
@@ -14,13 +13,10 @@ namespace POS_ITS.REPOSITORIES.InventoryRepository
 {
     public class InventoryCosmosRepository : IInventoryRepository
     {
-        private readonly IConfiguration _configuration;
         private readonly Container _inventoryContainer;
 
-        public InventoryCosmosRepository(CosmosClient client, IConfiguration configuration)
+        public InventoryCosmosRepository(CosmosClient client, string databaseName)
         {
-            _configuration = configuration;
-            var databaseName = configuration["CosmosDbSettings:DatabaseName"];
             var inventoryContainerName = "Inventory";
             _inventoryContainer = client.GetContainer(databaseName, inventoryContainerName);
         }

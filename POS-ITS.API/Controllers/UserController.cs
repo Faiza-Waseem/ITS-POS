@@ -12,9 +12,12 @@ using System.Security.Claims;
 using System.Text;
 using POS_ITS.API.Middlewares;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Web.Resource;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace POS_ITS.API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -32,6 +35,7 @@ namespace POS_ITS.API.Controllers
             _configuration = configuration;
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserReadScope")]
         [HttpGet("GetAllUsers")]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers()
         {
@@ -51,6 +55,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserReadScope")]
         [HttpGet("GetUserById")]
         public async Task<ActionResult<UserDTO>> GetUserById(int id)
         {
@@ -75,6 +80,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserWriteScope")]
         [HttpPost("RegisterUser")]
         public async Task<ActionResult> RegisterUserAsync(UserDTO userDto)
         {
@@ -101,6 +107,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserReadScope")]
         [HttpPost("Login")]
         public async Task<ActionResult<string>> Login(string usernameEmail, string password)
         {
@@ -128,7 +135,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Admin")]
         [HttpPost("ChangeUserRole")]
         public async Task<ActionResult> SetUserRoleAsync(int id, string role)
         {
@@ -153,6 +160,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserReadScope")]
         [HttpGet("Logout")]
         public async Task<ActionResult> Logout()
         {

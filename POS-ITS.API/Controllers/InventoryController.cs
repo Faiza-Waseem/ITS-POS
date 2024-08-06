@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using POS_ITS.MODEL;
 using POS_ITS.SERVICE.InventoryService;
 
 namespace POS_ITS.API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class InventoryController : ControllerBase
@@ -19,6 +22,7 @@ namespace POS_ITS.API.Controllers
             _logger = logger;
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserReadScope")]
         [HttpGet("TrackProductQuantity")]
         public async Task<ActionResult<int>> TrackProductQuantityAsync(int id)
         {
@@ -43,7 +47,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = "CustomJWTBearer" ,Roles = "Admin")]
         [HttpPost("IncreaseProductQuantity")]
         public async Task<ActionResult> IncreaseProductQuantityAsync(int id, int quantity)
         {
@@ -68,6 +72,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserReadScope")]
         [HttpGet("CheckProductPrice")]
         public async Task<ActionResult<decimal>> GetProductPriceAsync(int id)
         {
@@ -92,7 +97,7 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Admin")]
         [HttpPost("ChangeProductPrice")]
         public async Task<ActionResult> ChangeProductPriceAsync(int id, decimal price)
         {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using POS_ITS.DATA;
-using POS_ITS.MODEL;
+using POS_ITS.MODEL.Entities;
 using POS_ITS.REPOSITORIES.SalesRepository;
 using System;
 using System.Collections.Generic;
@@ -53,7 +53,7 @@ namespace POS_ITS.API.UNITTEST.RepositoryTests.SalesRepositoryTests
             await _repository.AddProductToSaleAsync(1, 3);
 
             //Assert
-            var saleProduct = _repository.GetCurrentSaleForTesting.Products.First();
+            var saleProduct = _repository.GetCurrentSaleForTesting.SaleProducts.First();
             var productQuantityCheck = await _context.Inventory.FindAsync(1);
 
             Assert.IsNotNull(saleProduct);

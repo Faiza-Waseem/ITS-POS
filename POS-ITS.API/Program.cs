@@ -1,10 +1,13 @@
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Configuration.AzureKeyVault;
+using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using POS_ITS.API.AutoMapper;
 using POS_ITS.API.Middlewares;
-using POS_ITS.DATA;
 using POS_ITS.REPOSITORIES.InventoryRepository;
 using POS_ITS.REPOSITORIES.ProductRepository;
 using POS_ITS.REPOSITORIES.SalesRepository;
@@ -19,43 +22,68 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<DataDbContext>();
-
-// Configure Cosmos DB
-var cosmosClient = new CosmosClient(builder.Configuration["CosmosDbSettings:EndpointUri"], builder.Configuration["CosmosDbSettings:PrimaryKey"]);
-builder.Services.AddSingleton(cosmosClient);
+//builder.Services.AddDbContext<DataDbContext>();
 IConfiguration configuration = builder.Configuration;
 
+// Configure Cosmos DB
+
+CosmosClient cosmosClient = null;
+string databaseName = "";
+
+if (builder.Environment.IsProduction())
+{
+    var keyVaultURL = configuration["KeyVaultSettings:KeyVaultURL"]!;
+    var clientID = configuration["KeyVaultSettings:ClientID"]!;
+    var clientSecret = configuration["KeyVaultSettings:ClientSecret"]!;
+    var directoryID = configuration["KeyVaultSettings:DirectoryID"]!;
+
+    var credential = new ClientSecretCredential(directoryID, clientID, clientSecret);
+
+    builder.Configuration.AddAzureKeyVault(keyVaultURL, clientID, clientSecret, new DefaultKeyVaultSecretManager());
+
+    var client = new SecretClient(new Uri(keyVaultURL), credential);
+
+    cosmosClient = new CosmosClient(client.GetSecret("ProdEndpointUri").Value.Value.ToString(), client.GetSecret("ProdPrimaryKey").Value.Value.ToString());
+    builder.Services.AddSingleton(cosmosClient);
+
+    databaseName = client.GetSecret("ProdDatabaseName").Value.Value.ToString();
+}
+
+if (builder.Environment.IsDevelopment())
+{
+    cosmosClient = new CosmosClient(configuration["CosmosDbSettings:EndpointUri"]!, configuration["CosmosDbSettings:PrimaryKey"]!);
+    builder.Services.AddSingleton(cosmosClient);
+    databaseName = configuration["CosmosDbSettings:DatabaseName"]!;
+}
 // Register repositories
 //builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserRepository>(provider =>
 {
     var client = provider.GetRequiredService<CosmosClient>();
-    return new UserCosmosRepository(client, configuration);
+    return new UserCosmosRepository(client, databaseName);
 });
 
 //builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductRepository>(provider =>
 {
     var client = provider.GetRequiredService<CosmosClient>();
-    return new ProductCosmosRepository(client, configuration);
+    return new ProductCosmosRepository(client, databaseName);
 });
 
 //builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 builder.Services.AddScoped<IInventoryRepository>(provider =>
 {
     var client = provider.GetRequiredService<CosmosClient>();
-    return new InventoryCosmosRepository(client, configuration);
+    return new InventoryCosmosRepository(client, databaseName);
 });
 
 //builder.Services.AddScoped<ISalesRepository, SalesRepository>();
 builder.Services.AddScoped<ISalesRepository>(provider =>
 {
     var client = provider.GetRequiredService<CosmosClient>();
-    return new SalesCosmosRepository(client, configuration);
+    return new SalesCosmosRepository(client, databaseName);
 });
 
 builder.Services.AddScoped<IUserService, UserService>();
@@ -99,35 +127,25 @@ builder.Services.AddSwaggerGen(s =>
     s.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
-//builder.Services.AddSwaggerGen(s =>
-//{ 
-//    s.AddSecurityDefinition("Authorization", new OpenApiSecurityScheme
-//    {
-//        In = ParameterLocation.Header,
-//        Name = "Authorization",
-//        Type = SecuritySchemeType.ApiKey
-//    });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(options =>
+{
+    options.TokenValidationParameters.ValidateIssuer = true;
+    options.TokenValidationParameters.ValidAudience = builder.Configuration["AzureAd:Audience"];
+},
+microsoftidentityoptions =>
+{
+    builder.Configuration.GetSection("AzureAd").Bind(microsoftidentityoptions);
+},
+"Bearer",
+true);
 
-//    s.AddSecurityRequirement(new OpenApiSecurityRequirement
-//    {
-//        {
-//            new OpenApiSecurityScheme
-//            {
-//                Reference = new OpenApiReference
-//                {
-//                    Type = ReferenceType.SecurityScheme,
-//                    Id = "Authorization"
-//                }
-//            },
-//            new string[] {}
-//        }
-//    });
-
-//    s.OperationFilter<SecurityRequirementsOperationFilter>();
-//});
-
-builder.Services.AddAuthentication().AddJwtBearer(t => {
-    t.TokenValidationParameters = new TokenValidationParameters
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "CustomJWTBearer";
+    options.DefaultChallengeScheme = "CustomJWTBearer";
+}).AddJwtBearer("CustomJWTBearer", options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
@@ -135,16 +153,7 @@ builder.Services.AddAuthentication().AddJwtBearer(t => {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-    };
-    t.Events = new JwtBearerEvents
-    {
-        OnAuthenticationFailed = context =>
-            {
-                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
-                Console.WriteLine($"{context.Request.Headers["Authorization"].ToString()}");
-                return Task.CompletedTask;
-            }
+        ValidateIssuerSigningKey = true
     };
 });
 

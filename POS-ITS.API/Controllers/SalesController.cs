@@ -5,6 +5,7 @@ using POS_ITS.SERVICE.SalesService;
 
 namespace POS_ITS.API.Controllers
 {
+    [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Cashier")]
     [Route("api/[controller]")]
     [ApiController]
     public class SalesController : ControllerBase
@@ -18,7 +19,6 @@ namespace POS_ITS.API.Controllers
             _logger = logger;
         }
 
-        [Authorize(Roles = "Cashier")]
         [HttpPost("AddProductToCurrentSale")]
         public async Task<ActionResult> AddProductToSaleAsync(int id, int quantity)
         {
@@ -43,7 +43,6 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Cashier")]
         [HttpGet("CalculateAmountForCurrentSale")]
         public async Task<ActionResult<decimal>> CalculateAmountForSale()
         {
@@ -68,7 +67,6 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Cashier")]
         [HttpGet("GenerateReceiptForCurrentSale")]
         public async Task<ActionResult<string>> GenerateReceipt()
         {
@@ -93,7 +91,6 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(Roles = "Cashier")]
         [HttpGet("TransactCurrentSale")]
         public async Task<ActionResult> TransactSaleAsync()
         {

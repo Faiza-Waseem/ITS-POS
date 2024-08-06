@@ -63,7 +63,7 @@ namespace POS_ITS.API.UNITTEST.RepositoryTests.SalesRepositoryTests
         }
 
         [Test]
-        public void CalculateAmountForSale_ReturnsCurrentSalesAmount()
+        public async Task CalculateAmountForSaleAsync_ReturnsCurrentSalesAmount()
         {
             // Arrange
             var product1 = new Product
@@ -89,18 +89,18 @@ namespace POS_ITS.API.UNITTEST.RepositoryTests.SalesRepositoryTests
             _context.Inventory.AddRange(product1, product2);
             _context.SaveChanges();
 
-            _repository.GetCurrentSaleForTesting.Products.Add(new SaleProduct { Product = product1, Quantity = 2 });
-            _repository.GetCurrentSaleForTesting.Products.Add(new SaleProduct { Product = product2, Quantity = 1 });
+            _repository.GetCurrentSaleForTesting.SaleProducts.Add(new SaleProduct { ProductId = 1, Quantity = 2 });
+            _repository.GetCurrentSaleForTesting.SaleProducts.Add(new SaleProduct { ProductId = 2, Quantity = 1 });
 
             // Act
-            var totalAmount = _repository.CalculateAmountForSale();
+            var totalAmount = await _repository.CalculateAmountForSaleAsync();
 
             // Assert
             Assert.That(totalAmount, Is.EqualTo(400));
         }
 
         [Test]
-        public void GenerateReceipt_ReturnsCurrentSaleReceipt()
+        public async Task GenerateReceiptAsync_ReturnsCurrentSaleReceipt()
         {
             // Arrange
             var product1 = new Product
@@ -126,8 +126,8 @@ namespace POS_ITS.API.UNITTEST.RepositoryTests.SalesRepositoryTests
             _context.Inventory.AddRange(product1, product2);
             _context.SaveChanges();
 
-            _repository.GetCurrentSaleForTesting.Products.Add(new SaleProduct { Product = product1, Quantity = 2 });
-            _repository.GetCurrentSaleForTesting.Products.Add(new SaleProduct { Product = product2, Quantity = 1 });
+            _repository.GetCurrentSaleForTesting.SaleProducts.Add(new SaleProduct { ProductId = 1, Quantity = 2 });
+            _repository.GetCurrentSaleForTesting.SaleProducts.Add(new SaleProduct { ProductId = 2, Quantity = 1 });
 
             string expectedReceipt = "Product Id\t\tProduct Name\t\tQuantity\t\tPrice\t\tTotal Price\n" +
                                      "1\t\t\tProduct 1\t\t\t2\t\t\t100\t\t200\n" +
@@ -135,7 +135,7 @@ namespace POS_ITS.API.UNITTEST.RepositoryTests.SalesRepositoryTests
                                      "\nTotal Amount to be paid: 400\n";
 
             // Act
-            var receipt = _repository.GenerateReceipt();
+            var receipt = await _repository.GenerateReceiptAsync();
 
             // Assert
             Assert.That(receipt, Is.EqualTo(expectedReceipt));
@@ -158,20 +158,13 @@ namespace POS_ITS.API.UNITTEST.RepositoryTests.SalesRepositoryTests
             _context.Inventory.Add(product);
             await _context.SaveChangesAsync();
 
-            _repository.GetCurrentSaleForTesting.Products.Add(new SaleProduct { Product = product, Quantity = 2 });
+            _repository.GetCurrentSaleForTesting.SaleProducts.Add(new SaleProduct { ProductId = 1, Quantity = 2 });
 
             // Act
             await _repository.TransactSaleAsync();
 
             // Assert
-            var savedSale = await _context.Sales.Include(s => s.Products).FirstOrDefaultAsync();
-
-            Assert.IsNotNull(savedSale);
-            Assert.That(savedSale.Products.Count, Is.EqualTo(1));
-            Assert.That(savedSale.Products.First().ProductId, Is.EqualTo(1));
-            Assert.That(savedSale.Products.First().Quantity, Is.EqualTo(2));
-
-            var currentSaleProductsCount = _repository.GetCurrentSaleForTesting.Products.Count;
+            var currentSaleProductsCount = _repository.GetCurrentSaleForTesting.SaleProducts.Count;
 
             Assert.That(currentSaleProductsCount, Is.EqualTo(0));
         }

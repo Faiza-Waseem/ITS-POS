@@ -1,5 +1,6 @@
 ﻿using Moq;
 using POS_ITS.MODEL.Entities;
+using POS_ITS.REPOSITORIES.SalesRepository;
 using POS_ITS.REPOSITORIES.UserRepository;
 using POS_ITS.SERVICE.UserService;
 
@@ -92,9 +93,7 @@ namespace POS_ITS.API.UNITTEST.ServiceTests.UserServiceTests
             // Arrange
             var usernameEmail = "user@example.com";
             var password = "password";
-
-            _mockUserRepository.Setup(repo => repo.LoginAsync(usernameEmail, password))
-                .Returns(Task.CompletedTask);
+            Moq.Language.Flow.ISetup<IUserRepository, Task<int>> setup = _mockUserRepository.Setup(repo => repo.LoginAsync(usernameEmail, password));
 
             // Act
             await _userService.LoginAsync(usernameEmail, password);

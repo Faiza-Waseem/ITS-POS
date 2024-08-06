@@ -9,8 +9,8 @@ namespace POS_ITS.SERVICE.SalesService
     public interface ISalesService
     {
         Task AddProductToSaleAsync(int id, int quantity);
-        Task<decimal> CalculateAmountForSale();
-        Task<string> GenerateReceipt();
+        Task<decimal> CalculateAmountForSaleAsync();
+        Task<string> GenerateReceiptAsync();
         Task TransactSaleAsync();
     }
 }

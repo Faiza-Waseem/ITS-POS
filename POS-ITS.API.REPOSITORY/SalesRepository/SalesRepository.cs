@@ -59,7 +59,7 @@ namespace POS_ITS.REPOSITORIES.SalesRepository
             }
         }
 
-        public async Task<decimal> CalculateAmountForSale()
+        public async Task<decimal> CalculateAmountForSaleAsync()
         {
             try
             {
@@ -84,7 +84,7 @@ namespace POS_ITS.REPOSITORIES.SalesRepository
             }
         }
 
-        public async Task<string> GenerateReceipt()
+        public async Task<string> GenerateReceiptAsync()
         {
             try
             {
@@ -101,8 +101,8 @@ namespace POS_ITS.REPOSITORIES.SalesRepository
                     decimal total = product.ProductPrice * (decimal)saleProduct.Quantity;
                     receipt += $"{product.ProductId}\t\t\t{product.ProductName}\t\t\t{saleProduct.Quantity}\t\t\t{product.ProductPrice}\t\t{total}\n";
                 }
-
-                receipt += $"\nTotal Amount to be paid: {CalculateAmountForSale()}\n";
+                var amount = await CalculateAmountForSaleAsync();
+                receipt += $"\nTotal Amount to be paid: {amount}\n";
 
                 return receipt;
             }

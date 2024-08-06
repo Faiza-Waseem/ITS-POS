@@ -154,7 +154,7 @@ namespace POS_ITS.API.UNITTEST.RepositoryTests.UserRepositoryTests
 
             // Act & Assert
             var ex = Assert.Throws<Exception>(() => _repository.Logout());
-            Assert.That(ex.Message, Is.EqualTo("No user logged in."));
+            Assert.That(ex.Message, Is.EqualTo("Repository: Error logging out: No user logged in."));
         }
 
         [Test]
@@ -174,7 +174,7 @@ namespace POS_ITS.API.UNITTEST.RepositoryTests.UserRepositoryTests
 
             // Act & Assert
             var ex = Assert.ThrowsAsync<Exception>(async () => await _repository.SetUserRoleAsync(1, "Cashier"));
-            Assert.That(ex.Message, Is.EqualTo("No user logged in."));
+            Assert.That(ex.Message, Is.EqualTo("Repository: Error changing user role: No user logged in."));
         }
 
         [Test]
@@ -204,7 +204,7 @@ namespace POS_ITS.API.UNITTEST.RepositoryTests.UserRepositoryTests
 
             // Act & Assert
             var ex = Assert.ThrowsAsync<Exception>(async () => await _repository.SetUserRoleAsync(1, "Cashier"));
-            Assert.That(ex.Message, Is.EqualTo("Cashier cannot change user role."));
+            Assert.That(ex.Message, Is.EqualTo("Repository: Error changing user role: Cashier cannot change user role."));
         }
 
         [Test]
@@ -223,7 +223,7 @@ namespace POS_ITS.API.UNITTEST.RepositoryTests.UserRepositoryTests
 
             // Act & Assert
             var ex = Assert.ThrowsAsync<Exception>(async () => await _repository.SetUserRoleAsync(1, "Admin"));
-            Assert.That(ex.Message, Is.EqualTo("No user found with id: 1"));
+            Assert.That(ex.Message, Is.EqualTo("Repository: Error changing user role: No user found with id: 1"));
         }
 
         [Test]
@@ -245,7 +245,7 @@ namespace POS_ITS.API.UNITTEST.RepositoryTests.UserRepositoryTests
 
             // Act & Assert
             var ex = Assert.ThrowsAsync<Exception>(async () => await _repository.SetUserRoleAsync(2, "Cashier"));
-            Assert.That(ex.Message, Is.EqualTo("Cannot change your own role."));
+            Assert.That(ex.Message, Is.EqualTo("Repository: Error changing user role: Cannot change your own role."));
         }
 
         [Test]

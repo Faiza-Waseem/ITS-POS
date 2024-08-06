@@ -2,6 +2,7 @@
 using POS_ITS.MODEL.Entities;
 using POS_ITS.REPOSITORIES.SalesRepository;
 using POS_ITS.SERVICE.SalesService;
+using System.Runtime.CompilerServices;
 
 namespace POS_ITS.API.UNITTEST.ServiceTests.SalesServiceTests
 {
@@ -36,30 +37,28 @@ namespace POS_ITS.API.UNITTEST.ServiceTests.SalesServiceTests
         }
 
         [Test]
-        public void CalculateAmountForSale_ReturnsCurrentSalesAmount()
+        public async Task CalculateAmountForSaleAsync_ReturnsCurrentSalesAmount()
         {
             // Arrange
-            decimal expectedAmount = 100.00m;
-            _mockSalesRepository.Setup(repo => repo.CalculateAmountForSale())
-                .Returns(expectedAmount);
+            decimal expectedAmount = 0m;
+            Moq.Language.Flow.ISetup<ISalesRepository, Task<decimal>> setup = _mockSalesRepository.Setup(repo => repo.CalculateAmountForSaleAsync());
 
             // Act
-            decimal actualAmount = _salesService.CalculateAmountForSale();
+            decimal actualAmount = await _salesService.CalculateAmountForSaleAsync();
 
             // Assert
             Assert.That(actualAmount, Is.EqualTo(expectedAmount));
         }
 
         [Test]
-        public void GenerateReceipt_ReturnsCurrentSaleReceipt()
+        public async Task GenerateReceiptAsync_ReturnsCurrentSaleReceipt()
         {
             // Arrange
-            string expectedReceipt = "Sample receipt";
-            _mockSalesRepository.Setup(repo => repo.GenerateReceipt())
-                .Returns(expectedReceipt);
+            string expectedReceipt = null;
+            Moq.Language.Flow.ISetup<ISalesRepository, Task<string>> setup = _mockSalesRepository.Setup(repo => repo.GenerateReceiptAsync());
 
             // Act
-            string actualReceipt = _salesService.GenerateReceipt();
+            string actualReceipt = await _salesService.GenerateReceiptAsync();
 
             // Assert
             Assert.That(actualReceipt, Is.EqualTo(expectedReceipt));

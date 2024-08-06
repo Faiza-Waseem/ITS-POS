@@ -14,6 +14,7 @@ using POS_ITS.API.Middlewares;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Hosting;
 
 namespace POS_ITS.API.Controllers
 {
@@ -22,17 +23,19 @@ namespace POS_ITS.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IHostEnvironment _environment;
         private readonly IUserService _service;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         ILogger<UserController> _logger;
 
-        public UserController(IUserService service, IMapper mapper, ILogger<UserController> logger, IConfiguration configuration)
+        public UserController(IUserService service, IMapper mapper, ILogger<UserController> logger, IConfiguration configuration, IHostEnvironment environment)
         {
             _service = service;
             _mapper = mapper;
             _logger = logger;
             _configuration = configuration;
+            _environment = environment;
         }
 
         [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserReadScope")]
@@ -111,6 +114,10 @@ namespace POS_ITS.API.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<string>> Login(string usernameEmail, string password)
         {
+            if (string.IsNullOrEmpty(usernameEmail) || string.IsNullOrEmpty(password))
+            {
+                return BadRequest("Username or password cannot be null or empty.");
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -123,6 +130,11 @@ namespace POS_ITS.API.Controllers
                 _logger.LogInformation("User logged in successfully.");
 
                 var user = await _service.GetUserByIdAsync(id);
+
+                if (_environment.IsProduction()) 
+                {
+                    return Ok($"User logged in successfully.");
+                }
 
                 var token = CreateToken(user);
                 return Ok($"User logged in successfully. Token: {token}");
@@ -196,8 +208,8 @@ namespace POS_ITS.API.Controllers
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["JwtSettings:Issuer"],
-                audience: _configuration["JwtSettings:Audience"],
+                issuer: _configuration["JwtSettings:Issuer"]!,
+                audience: _configuration["JwtSettings:Audience"]!,
                 claims: claims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: creds

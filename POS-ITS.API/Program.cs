@@ -26,30 +26,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 //builder.Services.AddDbContext<DataDbContext>();
-IConfiguration configuration = builder.Configuration;
-
-// Configure Cosmos DB
-
-CosmosClient cosmosClient = null;
-string databaseName = "";
 
 if (builder.Environment.IsProduction())
 {
-    var keyVaultURI = configuration["KeyVaultSettings:KeyVaultURI"]!;
-    var clientID = configuration["KeyVaultSettings:ClientID"]!;
-    var clientSecret = configuration["KeyVaultSettings:ClientSecret"]!;
-    var directoryID = configuration["KeyVaultSettings:DirectoryID"]!;
+    var keyVaultURI = builder.Configuration["KeyVaultSettings:KeyVaultURI"]!;
+    var clientID = builder.Configuration["KeyVaultSettings:ClientID"]!;
+    var clientSecret = builder.Configuration["KeyVaultSettings:ClientSecret"]!;
+    var directoryID = builder.Configuration["KeyVaultSettings:DirectoryID"]!;
 
     var credential = new ClientSecretCredential(directoryID, clientID, clientSecret);
 
     builder.Configuration.AddAzureKeyVault(keyVaultURI, clientID, clientSecret, new DefaultKeyVaultSecretManager());
 
     var client = new SecretClient(new Uri(keyVaultURI), credential);
+    var endpointUri = client.GetSecret("ProdEndpointUri").Value.Value.ToString();
+    var primaryKey = client.GetSecret("ProdPrimaryKey").Value.Value.ToString();
+    var dbName = client.GetSecret("ProdDatabaseName").Value.Value.ToString();
 
-    cosmosClient = new CosmosClient(client.GetSecret("ProdEndpointUri").Value.Value.ToString(), client.GetSecret("ProdPrimaryKey").Value.Value.ToString());
-    builder.Services.AddSingleton(cosmosClient);
-
-    databaseName = client.GetSecret("ProdDatabaseName").Value.Value.ToString();
+    builder.Configuration["CosmosDbSettings:EndpointUri"] = endpointUri;
+    builder.Configuration["CosmosDbSettings:PrimaryKey"] = primaryKey;
+    builder.Configuration["CosmosDbSettings:DatabaseName"] = dbName;
 
     var jwtKey = client.GetSecret("ProdJWTKey").Value.Value.ToString();
     builder.Configuration["JwtSettings:Key"] = jwtKey;
@@ -62,13 +58,11 @@ if (builder.Environment.IsProduction())
     builder.Configuration["AzureAd:TenantId"] = azureTenantId;
     builder.Configuration["AzureAd:Audience"] = azureAudience;
 }
-else
-{
-    cosmosClient = new CosmosClient(configuration["CosmosDbSettings:EndpointUri"]!, configuration["CosmosDbSettings:PrimaryKey"]!);
-    builder.Services.AddSingleton(cosmosClient);
-    databaseName = configuration["CosmosDbSettings:DatabaseName"]!;
 
-}
+var cosmosClient = new CosmosClient(builder.Configuration["CosmosDbSettings:EndpointUri"]!, builder.Configuration["CosmosDbSettings:PrimaryKey"]!);
+builder.Services.AddSingleton(cosmosClient);
+string databaseName = builder.Configuration["CosmosDbSettings:DatabaseName"]!;
+
 // Register repositories
 //builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserRepository>(provider =>
@@ -111,8 +105,8 @@ builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 builder.Logging.ClearProviders();
 var log4netConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "log4net.config");
 builder.Logging.AddLog4Net(log4netConfigPath);
-builder.Services.AddSwaggerGen();
 
+builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(s =>
 {
     s.AddSecurityDefinition("AuthKey", new OpenApiSecurityScheme
@@ -142,7 +136,7 @@ builder.Services.AddSwaggerGen(s =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApi(options =>
 {
     options.TokenValidationParameters.ValidateIssuer = true;
-    options.TokenValidationParameters.ValidAudience = builder.Configuration["AzureAd:Audience"];
+    options.TokenValidationParameters.ValidAudience = builder.Configuration["AzureAd:Audience"]!;
 },
 microsoftidentityoptions =>
 {
@@ -150,7 +144,6 @@ microsoftidentityoptions =>
 },
 "Bearer",
 true);
-
 
 builder.Services.AddAuthentication(options =>
 {

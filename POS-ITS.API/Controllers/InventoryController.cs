@@ -47,7 +47,8 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(AuthenticationSchemes = "CustomJWTBearer" ,Roles = "Admin")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserWriteScope")]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost("IncreaseProductQuantity")]
         public async Task<ActionResult> IncreaseProductQuantityAsync(int id, int quantity)
         {
@@ -97,7 +98,8 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Admin")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserWriteScope")]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost("ChangeProductPrice")]
         public async Task<ActionResult> ChangeProductPriceAsync(int id, decimal price)
         {

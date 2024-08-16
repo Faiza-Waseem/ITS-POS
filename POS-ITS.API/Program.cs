@@ -145,22 +145,13 @@ microsoftidentityoptions =>
 "Bearer",
 true);
 
-builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthorization(options =>
 {
-    options.DefaultAuthenticateScheme = "CustomJWTBearer";
-    options.DefaultChallengeScheme = "CustomJWTBearer";
-}).AddJwtBearer("CustomJWTBearer", options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidIssuer = builder.Configuration["JwtSettings:Issuer"]!,
-        ValidAudience = builder.Configuration["JwtSettings:Audience"]!,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!)),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true
-    };
+    options.AddPolicy("AdminPolicy", policy =>
+        policy.RequireRole("User.Admin"));
+
+    options.AddPolicy("CashierPolicy", policy =>
+        policy.RequireRole("User.Cashier"));
 });
 
 var app = builder.Build();

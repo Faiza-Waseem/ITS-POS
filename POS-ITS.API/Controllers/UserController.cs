@@ -131,13 +131,7 @@ namespace POS_ITS.API.Controllers
 
                 var user = await _service.GetUserByIdAsync(id);
 
-                if (_environment.IsProduction()) 
-                {
-                    return Ok($"User logged in successfully.");
-                }
-
-                var token = CreateToken(user);
-                return Ok($"User logged in successfully. Token: {token}");
+                return Ok($"User logged in successfully.");
             }
             catch (Exception ex)
             {
@@ -147,7 +141,8 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Admin")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserWriteScope")]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost("ChangeUserRole")]
         public async Task<ActionResult> SetUserRoleAsync(int id, string role)
         {

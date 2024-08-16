@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using POS_ITS.SERVICE.SalesService;
 
 namespace POS_ITS.API.Controllers
 {
-    [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Cashier")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class SalesController : ControllerBase
@@ -19,6 +21,8 @@ namespace POS_ITS.API.Controllers
             _logger = logger;
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserWriteScope")]
+        [Authorize(Policy = "CashierPolicy")]
         [HttpPost("AddProductToCurrentSale")]
         public async Task<ActionResult> AddProductToSaleAsync(int id, int quantity)
         {
@@ -43,6 +47,8 @@ namespace POS_ITS.API.Controllers
             }
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserReadScope")]
+        [Authorize(Policy = "CashierPolicy")]
         [HttpGet("CalculateAmountForCurrentSale")]
         public async Task<ActionResult<decimal>> CalculateAmountForSale()
         {
@@ -67,6 +73,8 @@ namespace POS_ITS.API.Controllers
             }
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserReadScope")]
+        [Authorize(Policy = "CashierPolicy")]
         [HttpGet("GenerateReceiptForCurrentSale")]
         public async Task<ActionResult<string>> GenerateReceipt()
         {
@@ -91,6 +99,8 @@ namespace POS_ITS.API.Controllers
             }
         }
 
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserWriteScope")]
+        [Authorize(Policy = "CashierPolicy")]
         [HttpGet("TransactCurrentSale")]
         public async Task<ActionResult> TransactSaleAsync()
         {

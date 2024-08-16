@@ -73,7 +73,8 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Admin")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserWriteScope")]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost("AddProductToInventory")]
         public async Task<ActionResult<ProductDTO>> AddProduct([FromBody] ProductDTO productDto)
         {
@@ -100,7 +101,8 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Admin")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserWriteScope")]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPut("UpdateProduct")]
         public async Task<IActionResult> UpdateProduct(int id, ProductDTO productDto)
         {
@@ -127,7 +129,8 @@ namespace POS_ITS.API.Controllers
             }
         }
 
-        [Authorize(AuthenticationSchemes = "CustomJWTBearer", Roles = "Admin")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:UserWriteScope")]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpDelete("RemoveProductFromInventory")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
